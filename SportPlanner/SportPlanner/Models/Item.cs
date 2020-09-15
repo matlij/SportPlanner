@@ -9,4 +9,3 @@ namespace SportPlanner.Models
         public string Description { get; set; }
     }
 }
-//Test
