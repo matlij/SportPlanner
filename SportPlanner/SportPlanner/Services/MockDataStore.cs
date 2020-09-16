@@ -6,55 +6,51 @@ using SportPlanner.Models;
 
 namespace SportPlanner.Services
 {
-    public class MockDataStore : IDataStore<Item>
+    public class MockEventDataStore : IDataStore<Event>
     {
-        readonly List<Item> items;
+        readonly List<Event> _events;
 
-        public MockDataStore()
+        public MockEventDataStore()
         {
-            items = new List<Item>()
+            _events = new List<Event>()
             {
-                new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Third item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description="This is an item description." }
+                new Event(Guid.NewGuid().ToString()){ Date = new DateTime(2020, 09, 22), EventType = EventType.Traning  },
+                new Event(Guid.NewGuid().ToString()){ Date = new DateTime(2020, 09, 29), EventType = EventType.Traning  }
             };
         }
 
-        public async Task<bool> AddItemAsync(Item item)
+        public async Task<bool> AddItemAsync(Event @event)
         {
-            items.Add(item);
+            _events.Add(@event);
 
             return await Task.FromResult(true);
         }
 
-        public async Task<bool> UpdateItemAsync(Item item)
+        public async Task<bool> UpdateItemAsync(Event @event)
         {
-            var oldItem = items.Where((Item arg) => arg.Id == item.Id).FirstOrDefault();
-            items.Remove(oldItem);
-            items.Add(item);
+            var oldItem = _events.Where((Event arg) => arg.Id == @event.Id).FirstOrDefault();
+            _events.Remove(oldItem);
+            _events.Add(@event);
 
             return await Task.FromResult(true);
         }
 
         public async Task<bool> DeleteItemAsync(string id)
         {
-            var oldItem = items.Where((Item arg) => arg.Id == id).FirstOrDefault();
-            items.Remove(oldItem);
+            var oldItem = _events.Where((Event arg) => arg.Id == id).FirstOrDefault();
+            _events.Remove(oldItem);
 
             return await Task.FromResult(true);
         }
 
-        public async Task<Item> GetItemAsync(string id)
+        public async Task<Event> GetItemAsync(string id)
         {
-            return await Task.FromResult(items.FirstOrDefault(s => s.Id == id));
+            return await Task.FromResult(_events.FirstOrDefault(s => s.Id == id));
         }
 
-        public async Task<IEnumerable<Item>> GetItemsAsync(bool forceRefresh = false)
+        public async Task<IEnumerable<Event>> GetItemsAsync(bool forceRefresh = false)
         {
-            return await Task.FromResult(items);
+            return await Task.FromResult(_events);
         }
     }
 }

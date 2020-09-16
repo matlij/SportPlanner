@@ -13,7 +13,7 @@ namespace SportPlanner
         {
             InitializeComponent();
 
-            DependencyService.Register<MockDataStore>();
+            DependencyService.Register<MockEventDataStore>();
             MainPage = new AppShell();
         }
 

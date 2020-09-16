@@ -10,20 +10,20 @@ namespace SportPlanner.ViewModels
     public class ItemDetailViewModel : BaseViewModel
     {
         private string itemId;
-        private string text;
-        private string description;
+        private EventType eventType;
+        private DateTime date;
         public string Id { get; set; }
 
-        public string Text
+        public EventType EventType
         {
-            get => text;
-            set => SetProperty(ref text, value);
+            get => eventType;
+            set => SetProperty(ref eventType, value);
         }
 
-        public string Description
+        public DateTime Date
         {
-            get => description;
-            set => SetProperty(ref description, value);
+            get => date;
+            set => SetProperty(ref date, value);
         }
 
         public string ItemId
@@ -45,8 +45,7 @@ namespace SportPlanner.ViewModels
             {
                 var item = await DataStore.GetItemAsync(itemId);
                 Id = item.Id;
-                Text = item.Text;
-                Description = item.Description;
+                EventType = item.EventType;
             }
             catch (Exception)
             {
