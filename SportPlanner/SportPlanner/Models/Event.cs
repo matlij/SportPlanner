@@ -16,6 +16,7 @@ namespace SportPlanner.Models
 
         public string Id { get; }
         public DateTime Date { get; set; }
+        public string DayAndDate { get => $"{Date.DayOfWeek} {Date.Day}/{Date.Month}"; }
         public EventType EventType { get; set; }
         public IEnumerable<string> UsersInvited { get; set; }
         public IEnumerable<string> UsersAttending { get; set; }
