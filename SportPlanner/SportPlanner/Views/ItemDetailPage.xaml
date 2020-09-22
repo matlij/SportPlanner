@@ -5,10 +5,22 @@
              Title="{Binding Title}">
 
     <StackLayout Spacing="20" Padding="15">
-        <Label Text="Typ:" FontSize="Medium" />
-        <Label Text="{Binding EventType}" FontSize="Small"/>
-        <Label Text="Datum:" FontSize="Medium" />
-        <Label Text="{Binding Date}" FontSize="Small"/>
+        <Label Text="Time:" FontSize="Medium" />
+        <Label Text="{Binding TimeOfDay}" FontSize="Small"/>
+        <Label Text="Attending:" FontSize="Medium"/>
+        <ListView ItemsSource="{Binding Event.UsersAttending}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Label Text="{Binding .}" 
+                            LineBreakMode="NoWrap" 
+                            Style="{DynamicResource ListItemTextStyle}" 
+                            FontSize="13" />
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button Text="{Binding AttendButtonText}" Command="{Binding AttendCommand}"/>
     </StackLayout>
-    
+
 </ContentPage>

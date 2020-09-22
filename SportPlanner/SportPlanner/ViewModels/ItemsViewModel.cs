@@ -21,7 +21,7 @@ namespace SportPlanner.ViewModels
 
         public ItemsViewModel()
         {
-            Title = "Browse";
+            Title = "Events";
             Items = new ObservableCollection<Event>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 

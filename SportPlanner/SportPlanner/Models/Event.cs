@@ -1,25 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+using System.Collections.ObjectModel;
 
 namespace SportPlanner.Models
 {
     public class Event
     {
-        public Event(string id)
+        public Event(string id, EventType eventType)
         {
             Id = id;
-            UsersInvited = new List<string>();
-            UsersAttending = new List<string>();
+            EventType = eventType;
+            UsersInvited = new ObservableCollection<string>();
+            UsersAttending = new ObservableCollection<string>();
+
+            IconImage = GetIconImage(eventType);
+        }
+
+        private static string GetIconImage(EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.Traning:
+                    return "icon_traning.png";
+                case EventType.Game:
+                    return "icon_game.png";
+                default:
+                    return null;
+            };
         }
 
         public string Id { get; }
         public DateTime Date { get; set; }
-        public string DayAndDate { get => $"{Date.DayOfWeek} {Date.Day}/{Date.Month}"; }
-        public EventType EventType { get; set; }
-        public IEnumerable<string> UsersInvited { get; set; }
-        public IEnumerable<string> UsersAttending { get; set; }
+        public string DateAndDatesLeft { get => $"{Date.Day}/{Date.Month} - Days left: {(Date - DateTime.Now).Days}"; }
+        public EventType EventType { get; }
+        public string IconImage { get; private set; }
+        public ObservableCollection<string> UsersInvited { get; set; }
+        public ObservableCollection<string> UsersAttending { get; set; }
     }
 
     public class User

@@ -84,10 +84,9 @@ namespace SportPlanner.ViewModels
 
         private async void OnSave()
         {
-            var newItem = new Event(Guid.NewGuid().ToString())
+            var newItem = new Event(Guid.NewGuid().ToString(), EventType)
             {
                 Date = Date,
-                EventType = EventType
             };
 
             await DataStore.AddItemAsync(newItem);

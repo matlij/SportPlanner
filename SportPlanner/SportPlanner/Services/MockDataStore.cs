@@ -14,8 +14,13 @@ namespace SportPlanner.Services
         {
             _events = new List<Event>()
             {
-                new Event(Guid.NewGuid().ToString()){ Date = new DateTime(2020, 09, 22), EventType = EventType.Traning  },
-                new Event(Guid.NewGuid().ToString()){ Date = new DateTime(2020, 09, 29), EventType = EventType.Traning  }
+                new Event(Guid.NewGuid().ToString(), EventType.Traning){ Date = new DateTime(2020, 09, 22, 20, 0, 0) },
+                new Event(Guid.NewGuid().ToString(), EventType.Traning){ Date = new DateTime(2020, 09, 29, 20, 0, 0) },
+                new Event(Guid.NewGuid().ToString(), EventType.Game)
+                { 
+                    Date = new DateTime(2020, 10, 02, 17, 0, 0), 
+                    UsersAttending = new System.Collections.ObjectModel.ObservableCollection<string>{ "Matte", "Kalle", "Pelle" }
+                },
             };
         }
 
