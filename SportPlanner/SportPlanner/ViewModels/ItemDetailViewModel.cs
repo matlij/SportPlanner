@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using SportPlanner.Models;
 using Xamarin.Forms;
 
@@ -13,7 +11,9 @@ namespace SportPlanner.ViewModels
         private string itemId;
         private string timeOfDay;
         private Event @event;
-        private string attendButtonText;
+        private bool attendingBtnEnabled;
+        private bool unAttendingBtnEnabled;
+        private int attendingCount;
 
         public ItemDetailViewModel()
         {
@@ -34,19 +34,12 @@ namespace SportPlanner.ViewModels
                 }
 
                 await DataStore.UpdateItemAsync(@event);
-                AttendButtonText = GetAttendButtonText();
+                UpdateProperties(@event);
             }
             catch (Exception e)
             {
                 Debug.WriteLine("Failed to update event. " + e.Message);
             }
-        }
-
-        private string GetAttendButtonText()
-        {
-            return @event.UsersAttending.Contains(UserConstants.UserName)
-                ? "UnAttend"
-                : "Attend";
         }
 
         public string Id { get; set; }
@@ -63,10 +56,22 @@ namespace SportPlanner.ViewModels
             set => SetProperty(ref timeOfDay, value);
         }
 
-        public string AttendButtonText
+        public bool AttendingBtnEnabled
         {
-            get => attendButtonText;
-            set => SetProperty(ref attendButtonText, value);
+            get => attendingBtnEnabled;
+            set => SetProperty(ref attendingBtnEnabled, value);
+        }
+
+        public bool UnAttendingBtnEnabled
+        {
+            get => unAttendingBtnEnabled;
+            set => SetProperty(ref unAttendingBtnEnabled, value);
+        }
+
+        public int AttendingCount
+        {
+            get => attendingCount;
+            set => SetProperty(ref attendingCount, value);
         }
 
         public string ItemId
@@ -88,17 +93,38 @@ namespace SportPlanner.ViewModels
         {
             try
             {
-                var item = await DataStore.GetItemAsync(itemId);
-                Id = item.Id;
-                Event = item;
-                TimeOfDay = item.Date.TimeOfDay.ToString(@"hh\:mm");
-                AttendButtonText = GetAttendButtonText();
-                Title = $"{item.EventType} {item.Date.ToShortDateString()}";
+                var @event = await DataStore.GetItemAsync(itemId);
+                Id = @event.Id;
+                Title = $"{@event.EventType} {@event.Date.ToShortDateString()}";
+                UpdateProperties(@event);
             }
             catch (Exception e)
             {
                 Debug.WriteLine("Failed to Load Item. " + e.Message);
             }
+        }
+
+        private void UpdateProperties(Event @event)
+        {
+            Event = @event;
+            TimeOfDay = @event.Date.TimeOfDay.ToString(@"hh\:mm");
+            var userIsAttending = UserIsAttendingEvent(@event);
+            AttendingBtnEnabled = !userIsAttending;
+            UnAttendingBtnEnabled = userIsAttending;
+            AttendingCount = this.@event.UsersAttending.Count;
+        }
+
+        private static bool UserIsAttendingEvent(Event @event)
+        {
+            foreach (var user in @event.UsersAttending)
+            {
+                if (string.Equals(user, UserConstants.UserName))
+                { 
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

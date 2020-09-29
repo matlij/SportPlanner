@@ -1,26 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:SportPlanner.Converters"
              x:Class="SportPlanner.Views.ItemDetailPage"
              Title="{Binding Title}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:BooleanConverter x:Key="boolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <StackLayout Spacing="20" Padding="15">
-        <Label Text="Time:" FontSize="Medium" />
-        <Label Text="{Binding TimeOfDay}" FontSize="Small"/>
-        <Label Text="Attending:" FontSize="Medium"/>
-        <ListView ItemsSource="{Binding Event.UsersAttending}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Label Text="{Binding .}" 
-                            LineBreakMode="NoWrap" 
-                            Style="{DynamicResource ListItemTextStyle}" 
-                            FontSize="13" />
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <Button Text="{Binding AttendButtonText}" Command="{Binding AttendCommand}"/>
-    </StackLayout>
+        <Image Source="{Binding Event.IconImage}" HeightRequest="40" WidthRequest="40"/>
+        <Grid Padding="10" ColumnSpacing="15">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Label Text="Time:" FontSize="16" FontAttributes="Bold" />
+            <Label Grid.Column="1" Text="{Binding TimeOfDay}" FontSize="16"/>
+            <Label Grid.Row="1" Text="Location:" FontSize="16" FontAttributes="Bold" />
+            <Label Grid.Row="1" Grid.Column="1" Text="TestVägen 1, Stockholm" FontSize="16"/>
+            <Label Grid.Row="2" Text="Attending:" FontSize="16" FontAttributes="Bold" />
+            <Label Grid.Row="2" Grid.Column="1" Text="{Binding AttendingCount}" FontSize="16"/>
+        </Grid>
 
+        <StackLayout Spacing="15" Padding="10">
+            <Label Text="Player list" FontSize="16" FontAttributes="Bold"/>
+            <ListView ItemsSource="{Binding Event.UsersAttending}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Label Text="{Binding .}" 
+                                LineBreakMode="NoWrap" 
+                                Style="{DynamicResource ListItemTextStyle}"/>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+
+        <Grid Padding="10" ColumnSpacing="15" HorizontalOptions="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button IsEnabled="{Binding AttendingBtnEnabled, Mode=TwoWay}" 
+                    Text="Attend event" 
+                    Command="{Binding AttendCommand}"/>
+            <Button IsEnabled="{Binding UnAttendingBtnEnabled, Mode=TwoWay}" 
+                    Text="Unattend event" 
+                    Command="{Binding AttendCommand}"
+                    Grid.Column="1"/>
+        </Grid>
+    </StackLayout>
 </ContentPage>
