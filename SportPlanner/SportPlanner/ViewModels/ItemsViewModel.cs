@@ -7,6 +7,7 @@ using Xamarin.Forms;
 
 using SportPlanner.Models;
 using SportPlanner.Views;
+using System.Linq;
 
 namespace SportPlanner.ViewModels
 {
@@ -38,7 +39,7 @@ namespace SportPlanner.ViewModels
             {
                 Items.Clear();
                 var items = await DataStore.GetItemsAsync(true);
-                foreach (var item in items)
+                foreach (var item in items.OrderBy(i => i.Date))
                 {
                     Items.Add(item);
                 }
