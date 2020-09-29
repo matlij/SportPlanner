@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using SportPlanner.Extensions;
 using SportPlanner.Models;
 using Xamarin.Forms;
 
@@ -108,23 +109,10 @@ namespace SportPlanner.ViewModels
         {
             Event = @event;
             TimeOfDay = @event.Date.TimeOfDay.ToString(@"hh\:mm");
-            var userIsAttending = UserIsAttendingEvent(@event);
+            var userIsAttending = @event.UsersAttending.ContainsValue(UserConstants.UserName);
             AttendingBtnEnabled = !userIsAttending;
             UnAttendingBtnEnabled = userIsAttending;
             AttendingCount = this.@event.UsersAttending.Count;
-        }
-
-        private static bool UserIsAttendingEvent(Event @event)
-        {
-            foreach (var user in @event.UsersAttending)
-            {
-                if (string.Equals(user, UserConstants.UserName))
-                { 
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }
