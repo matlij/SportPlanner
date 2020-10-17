@@ -1,8 +1,21 @@
-﻿using System;
+﻿using SportPlanner.Extensions;
+using System;
 using System.Collections.ObjectModel;
 
 namespace SportPlanner.Models
 {
+    public class UserEvent
+    {
+        public UserEvent(Event @event, string userId)
+        {
+            Event = @event;
+            UserIsAttending = @event.UsersAttending.ContainsValue(userId);
+        }
+
+        public Event Event { get; }
+        public bool UserIsAttending { get; }
+    }
+
     public class Event
     {
         public Event(string id, EventType eventType)

@@ -13,20 +13,20 @@ namespace SportPlanner.ViewModels
 {
     public class ItemsViewModel : BaseViewModel
     {
-        private Event _selectedItem;
+        private UserEvent _selectedItem;
 
-        public ObservableCollection<Event> Items { get; }
+        public ObservableCollection<UserEvent> Items { get; }
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
-        public Command<Event> ItemTapped { get; }
+        public Command<UserEvent> ItemTapped { get; }
 
         public ItemsViewModel()
         {
             Title = "Events";
-            Items = new ObservableCollection<Event>();
+            Items = new ObservableCollection<UserEvent>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 
-            ItemTapped = new Command<Event>(OnItemSelected);
+            ItemTapped = new Command<UserEvent>(OnItemSelected);
 
             AddItemCommand = new Command(OnAddItem);
         }
@@ -39,9 +39,10 @@ namespace SportPlanner.ViewModels
             {
                 Items.Clear();
                 var items = await DataStore.GetItemsAsync(true);
-                foreach (var item in items.OrderBy(i => i.Date))
+                foreach (var @event in items.OrderBy(i => i.Date))
                 {
-                    Items.Add(item);
+                    var userEvent = new UserEvent(@event, UserConstants.UserName);
+                    Items.Add(userEvent);
                 }
             }
             catch (Exception ex)
@@ -60,7 +61,7 @@ namespace SportPlanner.ViewModels
             SelectedItem = null;
         }
 
-        public Event SelectedItem
+        public UserEvent SelectedItem
         {
             get => _selectedItem;
             set
@@ -75,13 +76,13 @@ namespace SportPlanner.ViewModels
             await Shell.Current.GoToAsync(nameof(NewItemPage));
         }
 
-        async void OnItemSelected(Event item)
+        async void OnItemSelected(UserEvent item)
         {
             if (item == null)
                 return;
 
             // This will push the ItemDetailPage onto the navigation stack
-            await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
+            await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Event.Id}");
         }
     }
 }
