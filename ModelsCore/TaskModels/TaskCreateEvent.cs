@@ -9,6 +9,6 @@ namespace ModelsCore.TaskModels
         public DateTime Date { get; set; }
         public EventType EventType { get; set; }
         public string Address { get; set; }
-        public IEnumerable<EventUserDto> UsersInvited { get; set; }
+        public IEnumerable<EventUserDto> Users { get; set; }
     }
 }

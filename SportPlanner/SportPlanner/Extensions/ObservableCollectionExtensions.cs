@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace SportPlanner.Extensions
@@ -17,6 +19,18 @@ namespace SportPlanner.Extensions
             }
 
             return false;
+        }
+
+        public static ObservableCollection<TResult> AsObservableCollection<T, TResult>(this IEnumerable<T> collection, Func<T, TResult> getResult)
+        {
+            var observableCollection = new ObservableCollection<TResult>();
+            foreach (var item in collection)
+            {
+                var result = getResult(item);
+                observableCollection.Add(result);
+            }
+
+            return observableCollection;
         }
     }
 }

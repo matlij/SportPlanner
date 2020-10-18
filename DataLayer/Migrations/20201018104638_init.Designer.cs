@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(SportPlannerContext))]
-    [Migration("20201012164432_init")]
+    [Migration("20201018104638_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,12 +73,15 @@ namespace DataLayer.Migrations
 
                     b.Property<string>("Identifier")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Identifier")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -86,13 +89,13 @@ namespace DataLayer.Migrations
             modelBuilder.Entity("DataLayer.Models.EventUser", b =>
                 {
                     b.HasOne("DataLayer.Models.Event", "Event")
-                        .WithMany("Users")
+                        .WithMany("EventUsers")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DataLayer.Models.User", "User")
-                        .WithMany("Events")
+                        .WithMany("EventUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

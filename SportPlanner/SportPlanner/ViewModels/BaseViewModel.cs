@@ -12,8 +12,6 @@ namespace SportPlanner.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IDataStore<Event> DataStore => DependencyService.Get<IDataStore<Event>>();
-
         bool isBusy = false;
         public bool IsBusy
         {
@@ -41,7 +39,6 @@ namespace SportPlanner.ViewModels
             return true;
         }
 
-        #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
@@ -51,6 +48,5 @@ namespace SportPlanner.ViewModels
 
             changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
     }
 }

@@ -1,8 +1,5 @@
-﻿using System;
+﻿using SportPlanner.Bootstrap;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using SportPlanner.Services;
-using SportPlanner.Views;
 
 namespace SportPlanner
 {
@@ -13,7 +10,9 @@ namespace SportPlanner
         {
             InitializeComponent();
 
-            DependencyService.Register<MockEventDataStore>();
+            Appcontiner.RegisterDependencies();
+            //DependencyService.Register<CloudStore>();
+
             MainPage = new AppShell();
         }
 

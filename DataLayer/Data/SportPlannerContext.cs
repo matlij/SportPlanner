@@ -11,8 +11,8 @@ namespace DataLayer.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Server=tcp:sportplannerserver.database.windows.net,1433;Initial Catalog=sportplannerdb;Persist Security Info=False;User ID=mattiaslij;Password=Njadoks189;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            optionsBuilder.UseSqlServer("Server=localhost;Database=sportplannerdb;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Server=tcp:sportplannerserver.database.windows.net,1433;Initial Catalog=sportplannerdb;Persist Security Info=False;User ID=mattiaslij;Password=Njadoks189;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            //optionsBuilder.UseSqlServer("Server=localhost;Database=sportplannerdb;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

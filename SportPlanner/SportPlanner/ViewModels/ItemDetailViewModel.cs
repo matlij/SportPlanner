@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using SportPlanner.Extensions;
 using SportPlanner.Models;
+using SportPlanner.Services;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
@@ -15,26 +17,30 @@ namespace SportPlanner.ViewModels
         private bool attendingBtnEnabled;
         private bool unAttendingBtnEnabled;
         private int attendingCount;
+        private readonly IDataStore<Event> _dataStore;
 
-        public ItemDetailViewModel()
+        public ItemDetailViewModel(IDataStore<Event> dataStore)
         {
             AttendCommand = new Command(OnAttend);
+            _dataStore = dataStore;
         }
 
         private async void OnAttend(object obj)
         {
             try
             {
-                if (@event.UsersAttending.Contains(UserConstants.UserName))
+                var eventUser = @event.Users.FirstOrDefault(u => u.UserId == UserConstants.UserId);
+                if (eventUser != null)
                 {
-                    @event.UsersAttending.Remove(UserConstants.UserName);
+                    @event.Users.Remove(eventUser);
                 }
                 else
                 {
-                    @event.UsersAttending.Add(UserConstants.UserName);
+                    var newEventUser = new EventUser(UserConstants.UserId) { IsAttending = true };
+                    @event.Users.Add(newEventUser);
                 }
 
-                await DataStore.UpdateItemAsync(@event);
+                await _dataStore.UpdateAsync(@event);
                 UpdateProperties(@event);
             }
             catch (Exception e)
@@ -94,7 +100,7 @@ namespace SportPlanner.ViewModels
         {
             try
             {
-                var @event = await DataStore.GetItemAsync(itemId);
+                var @event = await _dataStore.GetAsync(itemId);
                 Id = @event.Id;
                 Title = $"{@event.EventType} {@event.Date.ToShortDateString()}";
                 UpdateProperties(@event);
@@ -109,10 +115,10 @@ namespace SportPlanner.ViewModels
         {
             Event = @event;
             TimeOfDay = @event.Date.TimeOfDay.ToString(@"hh\:mm");
-            var userIsAttending = @event.UsersAttending.ContainsValue(UserConstants.UserName);
+            var userIsAttending = @event.Users.ContainsValue(new EventUser(UserConstants.UserId));
             AttendingBtnEnabled = !userIsAttending;
             UnAttendingBtnEnabled = userIsAttending;
-            AttendingCount = this.@event.UsersAttending.Count;
+            AttendingCount = @event.Users.Count;
         }
     }
 }

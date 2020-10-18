@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+﻿using Xamarin.Forms;
 
 using SportPlanner.Models;
 using SportPlanner.ViewModels;
+using SportPlanner.Bootstrap;
+using SportPlanner.Services;
 
 namespace SportPlanner.Views
 {
@@ -16,7 +14,8 @@ namespace SportPlanner.Views
         public NewItemPage()
         {
             InitializeComponent();
-            BindingContext = new NewItemViewModel();
+            var dataStore = Appcontiner.Resolve<IDataStore<Event>>();
+            BindingContext = new NewItemViewModel(dataStore);
         }
     }
 }

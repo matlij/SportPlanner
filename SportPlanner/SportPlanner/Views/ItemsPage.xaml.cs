@@ -1,15 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+﻿using Xamarin.Forms;
 
 using SportPlanner.Models;
-using SportPlanner.Views;
 using SportPlanner.ViewModels;
+using SportPlanner.Bootstrap;
+using SportPlanner.Services;
 
 namespace SportPlanner.Views
 {
@@ -21,7 +15,8 @@ namespace SportPlanner.Views
         {
             InitializeComponent();
 
-            BindingContext = _viewModel = new ItemsViewModel();
+            var dataStore = Appcontiner.Resolve<IDataStore<Event>>();
+            BindingContext = _viewModel = new ItemsViewModel(dataStore);
         }
 
         protected override void OnAppearing()

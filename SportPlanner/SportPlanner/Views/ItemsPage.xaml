@@ -31,13 +31,13 @@
                         </Grid.ColumnDefinitions>
                         <Image 
                             Grid.RowSpan="2"
-                            Source="{Binding Event.IconImage}"
+                            Source="{Binding IconImage}"
                             Aspect="AspectFit" 
                             HeightRequest="40"
                             WidthRequest="40" />
                         <Label
                             Grid.Column="1"
-                            Text="{Binding Event.EventType}" 
+                            Text="{Binding EventType}" 
                             LineBreakMode="NoWrap" 
                             Style="{DynamicResource ListItemTextStyle}" 
                             FontSize="16"
@@ -45,7 +45,7 @@
                         <Label 
                             Grid.Row="1"
                             Grid.Column="1"
-                            Text="{Binding Event.DateAndDatesLeft}" 
+                            Text="{Binding DateAndDatesLeft}" 
                             LineBreakMode="NoWrap"
                             Style="{DynamicResource ListItemDetailTextStyle}"
                             FontSize="13" />

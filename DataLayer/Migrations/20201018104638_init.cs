@@ -66,6 +66,12 @@ namespace DataLayer.Migrations
                 name: "IX_EventUsers_UserId",
                 table: "EventUsers",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Identifier",
+                table: "Users",
+                column: "Identifier",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -1,19 +1,37 @@
-﻿using SportPlanner.Extensions;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 
 namespace SportPlanner.Models
 {
-    public class UserEvent
+    //public class UserEvent
+    //{
+    //    public UserEvent(Event @event, string userId)
+    //    {
+    //        Event = @event;
+    //        UserIsAttending = @event.UsersAttending.ContainsValue(userId);
+    //    }
+
+    //    public Event Event { get; }
+    //    public bool UserIsAttending { get; }
+    //}
+
+    public class EventUser : IEquatable<EventUser>
     {
-        public UserEvent(Event @event, string userId)
+        public EventUser(string userId)
         {
-            Event = @event;
-            UserIsAttending = @event.UsersAttending.ContainsValue(userId);
+            UserId = userId;
         }
 
-        public Event Event { get; }
-        public bool UserIsAttending { get; }
+        public bool IsAttending { get; set; }
+        public string UserId { get; }
+
+        public bool Equals(EventUser other)
+        {
+            if (other == null)
+                return false;
+
+            return other.UserId == UserId;
+        }
     }
 
     public class Event
@@ -22,9 +40,7 @@ namespace SportPlanner.Models
         {
             Id = id;
             EventType = eventType;
-            UsersInvited = new ObservableCollection<string>();
-            UsersAttending = new ObservableCollection<string>();
-
+            Users = new ObservableCollection<EventUser>();
             IconImage = GetIconImage(eventType);
         }
 
@@ -46,8 +62,8 @@ namespace SportPlanner.Models
         public string DateAndDatesLeft { get => $"{Date.Day}/{Date.Month} - Days left: {(Date - DateTime.Now).Days}"; }
         public EventType EventType { get; }
         public string IconImage { get; private set; }
-        public ObservableCollection<string> UsersInvited { get; set; }
-        public ObservableCollection<string> UsersAttending { get; set; }
+        public string Address { get; set; }
+        public ObservableCollection<EventUser> Users { get; set; }
     }
 
     public class User

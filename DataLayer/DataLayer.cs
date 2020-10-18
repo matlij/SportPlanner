@@ -99,7 +99,7 @@ namespace DataLayer
             foreach (var inputEventUser in inputUsers)
             {
                 var existingUser = context.Users
-                    .Single(u => u.Identifier == inputEventUser.Identifier);
+                    .Single(u => u.Identifier == inputEventUser.UserId);
                 var newEventUser = new EventUser
                 {
                     User = existingUser,

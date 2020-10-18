@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using SportPlanner.Models;
+using SportPlanner.Services;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
@@ -14,10 +15,11 @@ namespace SportPlanner.ViewModels
         private ObservableCollection<EventType> eventTypes = new ObservableCollection<EventType>();
         private EventType eventType;
         private DateTime date;
+        private readonly IDataStore<Event> _dataStore;
 
         public string Id { get; set; }
 
-        public NewItemViewModel()
+        public NewItemViewModel(IDataStore<Event> dataStore)
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
@@ -26,6 +28,7 @@ namespace SportPlanner.ViewModels
 
             Date = DateTime.Now;
             PopulateEventTypes();
+            _dataStore = dataStore;
         }
 
         private void PopulateEventTypes()
@@ -89,7 +92,7 @@ namespace SportPlanner.ViewModels
                 Date = Date,
             };
 
-            await DataStore.AddItemAsync(newItem);
+            await _dataStore.AddAsync(newItem);
 
             // This will pop the current page off the navigation stack
             await Shell.Current.GoToAsync("..");

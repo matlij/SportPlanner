@@ -6,7 +6,7 @@ namespace ModelsCore
 {
     public class EventUserDto
     {
-        public string Identifier { get; set; }
+        public string UserId { get; set; }
         public bool IsAttending { get; set; }
     }
 

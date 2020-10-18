@@ -47,8 +47,8 @@ namespace DataLayer.Models.Translations
             };
 
 
-            @event.EventUsers = input.UsersInvited != null
-                ? input.UsersInvited.Select(u => AsEventUser(@event.Identifier, u)).ToList()
+            @event.EventUsers = input.Users != null
+                ? input.Users.Select(u => AsEventUser(@event.Identifier, u)).ToList()
                 : new List<EventUser>();
 
             return @event;
@@ -58,7 +58,7 @@ namespace DataLayer.Models.Translations
         {
             return new EventUserDto
             {
-                Identifier = input.User.Identifier,
+                UserId = input.User.Identifier,
                 IsAttending = input.IsAttending
             };
         }
@@ -67,7 +67,7 @@ namespace DataLayer.Models.Translations
         {
             return new EventUser
             {
-                User = new User { Identifier = input.Identifier },
+                User = new User { Identifier = input.UserId },
                 Event = new Event { Identifier = eventIdentifier },
                 IsAttending = input.IsAttending
             };

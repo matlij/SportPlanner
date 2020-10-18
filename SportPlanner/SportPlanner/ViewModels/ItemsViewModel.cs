@@ -2,33 +2,34 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
 using Xamarin.Forms;
-
 using SportPlanner.Models;
 using SportPlanner.Views;
 using System.Linq;
+using SportPlanner.Services;
 
 namespace SportPlanner.ViewModels
 {
     public class ItemsViewModel : BaseViewModel
     {
-        private UserEvent _selectedItem;
+        private Event _selectedItem;
+        private readonly IDataStore<Event> _dataStore;
 
-        public ObservableCollection<UserEvent> Items { get; }
+        public ObservableCollection<Event> Items { get; }
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
-        public Command<UserEvent> ItemTapped { get; }
+        public Command<Event> ItemTapped { get; }
 
-        public ItemsViewModel()
+        public ItemsViewModel(IDataStore<Event> dataStore)
         {
             Title = "Events";
-            Items = new ObservableCollection<UserEvent>();
+            Items = new ObservableCollection<Event>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 
-            ItemTapped = new Command<UserEvent>(OnItemSelected);
+            ItemTapped = new Command<Event>(OnItemSelected);
 
             AddItemCommand = new Command(OnAddItem);
+            _dataStore = dataStore;
         }
 
         async Task ExecuteLoadItemsCommand()
@@ -38,11 +39,10 @@ namespace SportPlanner.ViewModels
             try
             {
                 Items.Clear();
-                var items = await DataStore.GetItemsAsync(true);
+                var items = await _dataStore.GetFromUserAsync(UserConstants.UserId, true);
                 foreach (var @event in items.OrderBy(i => i.Date))
                 {
-                    var userEvent = new UserEvent(@event, UserConstants.UserName);
-                    Items.Add(userEvent);
+                    Items.Add(@event);
                 }
             }
             catch (Exception ex)
@@ -61,7 +61,7 @@ namespace SportPlanner.ViewModels
             SelectedItem = null;
         }
 
-        public UserEvent SelectedItem
+        public Event SelectedItem
         {
             get => _selectedItem;
             set
@@ -76,13 +76,13 @@ namespace SportPlanner.ViewModels
             await Shell.Current.GoToAsync(nameof(NewItemPage));
         }
 
-        async void OnItemSelected(UserEvent item)
+        async void OnItemSelected(Event item)
         {
             if (item == null)
                 return;
 
             // This will push the ItemDetailPage onto the navigation stack
-            await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Event.Id}");
+            await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
         }
     }
 }
