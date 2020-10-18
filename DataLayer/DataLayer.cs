@@ -4,6 +4,7 @@ using DataLayer.Models.Translations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using ModelsCore;
+using ModelsCore.Exceptions;
 using ModelsCore.Interfaces;
 using ModelsCore.TaskModels;
 using System.Collections.Generic;
@@ -49,6 +50,9 @@ namespace DataLayer
             using var context = new SportPlannerContext();
 
             var @event = input.AsEvent();
+            var newUsers = GetEventUsers(context, @event, input.Users);
+            @event.EventUsers = newUsers;
+
             context.Add(@event);
             await context.SaveChangesAsync();
 
@@ -63,7 +67,7 @@ namespace DataLayer
                 .Include(e => e.EventUsers)
                 .Single(e => e.Identifier == input.Identifier);
 
-            var newUsers = GetEventUsers(input.Users, context, existing);
+            var newUsers = GetEventUsers(context, existing, input.Users);
             if (existing.EventUsers != null)
                 existing.EventUsers.Clear();
             existing.EventUsers = newUsers;
@@ -98,7 +102,7 @@ namespace DataLayer
             return true;
         }
 
-        private static ICollection<EventUser> GetEventUsers(IEnumerable<EventUserDto> inputUsers, SportPlannerContext context, Event existing)
+        private static ICollection<EventUser> GetEventUsers(SportPlannerContext context, Event @event, IEnumerable<EventUserDto> inputUsers)
         {
             var newUsers = new List<EventUser>();
             if (inputUsers == null)
@@ -108,18 +112,28 @@ namespace DataLayer
 
             foreach (var inputEventUser in inputUsers)
             {
-                var existingUser = context.Users
-                    .Single(u => u.Identifier == inputEventUser.UserId);
+                User existingUser = GetUserFromSource(context, inputEventUser);
                 var newEventUser = new EventUser
                 {
                     User = existingUser,
-                    Event = existing,
+                    Event = @event,
                     IsAttending = inputEventUser.IsAttending
                 };
                 newUsers.Add(newEventUser);
             }
 
             return newUsers;
+        }
+
+        private static User GetUserFromSource(SportPlannerContext context, EventUserDto inputEventUser)
+        {
+            var user = context.Users.FirstOrDefault(u => u.Identifier == inputEventUser.UserId);
+            if (user == null)
+            {
+                throw new BadInputException("Couldn't find user with id: " + inputEventUser.UserId);
+            }
+
+            return user;
         }
 
         private static IIncludableQueryable<Event, User> GetEvents(SportPlannerContext context)

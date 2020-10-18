@@ -1,5 +1,4 @@
-﻿using DataLayer.Models;
-using ModelsCore;
+﻿using ModelsCore;
 using ModelsCore.Enums;
 using ModelsCore.TaskModels;
 using System.Collections.Generic;
@@ -39,19 +38,12 @@ namespace DataLayer.Models.Translations
 
         public static Event AsEvent(this TaskCreateEvent input)
         {
-            var @event = new Event
+            return new Event
             {
                 Address = input.Address,
                 Date = input.Date,
                 EventType = (int)input.EventType
             };
-
-
-            @event.EventUsers = input.Users != null
-                ? input.Users.Select(u => AsEventUser(@event.Identifier, u)).ToList()
-                : new List<EventUser>();
-
-            return @event;
         }
 
         private static EventUserDto AsEventUserDto(EventUser input)
