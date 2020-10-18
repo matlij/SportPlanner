@@ -90,6 +90,10 @@ namespace SportPlanner.ViewModels
             var newItem = new Event(Guid.NewGuid().ToString(), EventType)
             {
                 Date = Date,
+                Users = new ObservableCollection<EventUser> 
+                { 
+                    new EventUser(UserConstants.UserId) { IsAttending = true} 
+                }
             };
 
             await _dataStore.AddAsync(newItem);
