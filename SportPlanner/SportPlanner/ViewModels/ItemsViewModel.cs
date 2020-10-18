@@ -39,7 +39,7 @@ namespace SportPlanner.ViewModels
             try
             {
                 Items.Clear();
-                var items = await _dataStore.GetFromUserAsync(UserConstants.UserId, true);
+                var items = await _dataStore.GetAsync(true);
                 foreach (var @event in items.OrderBy(i => i.Date))
                 {
                     Items.Add(@event);

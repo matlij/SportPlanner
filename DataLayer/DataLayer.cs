@@ -2,6 +2,7 @@
 using DataLayer.Models;
 using DataLayer.Models.Translations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using ModelsCore;
 using ModelsCore.Interfaces;
 using ModelsCore.TaskModels;
@@ -13,6 +14,16 @@ namespace DataLayer
 {
     public class DataLayer : IDataLayer
     {
+        public ICollection<EventDto> Get()
+        {
+            using var context = new SportPlannerContext();
+            var events = GetEvents(context);
+
+            return events
+                .Select(e => e.AsEventDto())
+                .ToList();
+        }
+
         public EventDto Get(string identifier)
         {
             using var context = new SportPlannerContext();
@@ -26,10 +37,9 @@ namespace DataLayer
         {
             using var context = new SportPlannerContext();
 
-            var events = context.Events
-                .Include(e => e.EventUsers)
-                .ThenInclude(e => e.User)
-                .Where(e => e.EventUsers.Any(eu => eu.User.Identifier == userIdentifier));
+            var events = GetEvents(context)
+                .Where(e => e.EventUsers
+                    .Any(eu => eu.User.Identifier == userIdentifier));
 
             return events.Select(e => e.AsEventDto()).ToList();
         }
@@ -110,6 +120,13 @@ namespace DataLayer
             }
 
             return newUsers;
+        }
+
+        private static IIncludableQueryable<Event, User> GetEvents(SportPlannerContext context)
+        {
+            return context.Events
+                .Include(e => e.EventUsers)
+                .ThenInclude(e => e.User);
         }
     }
 }

@@ -62,6 +62,16 @@ namespace SportPlanner.Services
             return result.AsEvent();
         }
 
+        public async Task<IEnumerable<Event>> GetAsync(bool forceRefresh = false)
+        {
+            var uri = new UriBuilder(UriConstants.BaseUri)
+            {
+                Path = $"{UriConstants.SportPlannerUri}"
+            };
+
+            return await GetEvents(uri);
+        }
+
         public async Task<IEnumerable<Event>> GetFromUserAsync(string userId, bool forceRefresh = false)
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
@@ -69,6 +79,11 @@ namespace SportPlanner.Services
                 Path = $"api/user/{userId}/events"
             };
 
+            return await GetEvents(uri);
+        }
+
+        private async Task<IEnumerable<Event>> GetEvents(UriBuilder uri)
+        {
             var result = await _repository.GetAsync<IEnumerable<EventDto>>(uri.ToString());
 
             return result

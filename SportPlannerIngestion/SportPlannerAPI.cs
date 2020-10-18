@@ -23,6 +23,18 @@ namespace SportPlannerIngestion
             _dataLayer = dataLayer;
         }
 
+        [FunctionName("GetAll")]
+        public IActionResult GetAll(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "event")] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("Getting all events");
+
+            var events = _dataLayer.Get();
+
+            return new OkObjectResult(events);
+        }
+
         [FunctionName("Get")]
         public IActionResult Get(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "event/{id}")] HttpRequest req,

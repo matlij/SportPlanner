@@ -57,5 +57,10 @@ namespace SportPlanner.Services
         {
             return await Task.FromResult(_events.Where(e => e.Users.Any(u => u.UserId == userId)));
         }
+
+        public async Task<IEnumerable<Event>> GetAsync(bool forceRefresh = false)
+        {
+            return await Task.FromResult(_events);
+        }
     }
 }

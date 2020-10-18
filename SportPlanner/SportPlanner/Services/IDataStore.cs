@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SportPlanner.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,5 +12,6 @@ namespace SportPlanner.Services
         Task<bool> DeleteAsync(string id);
         Task<T> GetAsync(string id);
         Task<IEnumerable<T>> GetFromUserAsync(string userId, bool forceRefresh = false);
+        Task<IEnumerable<Event>> GetAsync(bool forceRefresh = false);
     }
 }
