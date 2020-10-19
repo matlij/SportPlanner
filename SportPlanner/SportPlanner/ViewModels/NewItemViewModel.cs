@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Windows.Input;
 using SportPlanner.Models;
 using SportPlanner.Services;
 using Xamarin.Forms;
@@ -87,19 +84,33 @@ namespace SportPlanner.ViewModels
 
         private async void OnSave()
         {
-            var newItem = new Event(Guid.NewGuid().ToString(), EventType)
+            IsBusy = true;
+
+            try
             {
-                Date = Date,
-                Users = new ObservableCollection<EventUser> 
-                { 
-                    new EventUser(UserConstants.UserId) { IsAttending = true} 
-                }
-            };
+                var newItem = new Event(Guid.NewGuid().ToString(), EventType)
+                {
+                    Date = Date,
+                    Users = new ObservableCollection<EventUser>
+                    {
+                        new EventUser(UserConstants.UserId) { IsAttending = true}
+                    }
+                };
 
-            await _dataStore.AddAsync(newItem);
+                await _dataStore.AddAsync(newItem);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Save new event failed. Exception: " + ex);
+            }
+            finally
+            {
+                IsBusy = false;
 
-            // This will pop the current page off the navigation stack
-            await Shell.Current.GoToAsync("..");
+                // This will pop the current page off the navigation stack
+                await Shell.Current.GoToAsync("..");
+            }
+
         }
     }
 }
