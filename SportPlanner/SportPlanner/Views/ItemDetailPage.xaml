@@ -3,57 +3,59 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SportPlanner.Views.ItemDetailPage"
              Title="{Binding Title}">
-
-    <StackLayout Spacing="20" Padding="15">
-        <Image Source="{Binding Event.IconImage}" HeightRequest="40" WidthRequest="40"/>
-        <Grid Padding="10" ColumnSpacing="15">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Label Text="Time:" FontSize="16" FontAttributes="Bold" />
-            <Label Grid.Column="1" Text="{Binding TimeOfDay}" FontSize="16"/>
-            <Label Grid.Row="1" Text="Location:" FontSize="16" FontAttributes="Bold" />
-            <Label Grid.Row="1" Grid.Column="1" Text="TestVägen 1, Stockholm" FontSize="16"/>
-            <Label Grid.Row="2" Text="Attending:" FontSize="16" FontAttributes="Bold" />
-            <Label Grid.Row="2" Grid.Column="1" Text="{Binding AttendingCount}" FontSize="16"/>
-        </Grid>
-
-        <StackLayout Spacing="15" Padding="10">
-            <Label Text="Player list" FontSize="16" FontAttributes="Bold"/>
-            <ListView ItemsSource="{Binding Event.UsersAttending}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <Label Text="{Binding .}" 
+    <AbsoluteLayout Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <StackLayout Padding="6" Orientation="Horizontal" AbsoluteLayout.LayoutBounds="0.5, 0.5, -1, -1" AbsoluteLayout.LayoutFlags="PositionProportional">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" WidthRequest="40" HeightRequest="40" />
+        </StackLayout>
+        <StackLayout Spacing="20" Padding="15" AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All">
+            <Image Source="{Binding Event.IconImage}" HeightRequest="40" WidthRequest="40"/>
+            <Grid Padding="10" ColumnSpacing="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Text="Time:" FontSize="16" FontAttributes="Bold" />
+                <Label Grid.Column="1" Text="{Binding TimeOfDay}" FontSize="16"/>
+                <Label Grid.Row="1" Text="Location:" FontSize="16" FontAttributes="Bold" />
+                <Label Grid.Row="1" Grid.Column="1" Text="TestVägen 1, Stockholm" FontSize="16"/>
+                <Label Grid.Row="2" Text="Attending:" FontSize="16" FontAttributes="Bold" />
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding AttendingCount}" FontSize="16"/>
+            </Grid>
+            <StackLayout Spacing="15" Padding="10">
+                <Label Text="Player list" FontSize="16" FontAttributes="Bold"/>
+                <ListView ItemsSource="{Binding Event.UsersAttending}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Label Text="{Binding .}" 
                                 LineBreakMode="NoWrap" 
                                 Style="{DynamicResource ListItemTextStyle}"/>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackLayout>
-
-        <Grid Padding="10" ColumnSpacing="15" HorizontalOptions="Center">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Button IsEnabled="{Binding AttendingBtnEnabled, Mode=TwoWay}" 
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+            <Grid Padding="10" ColumnSpacing="15" HorizontalOptions="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button IsEnabled="{Binding AttendingBtnEnabled, Mode=TwoWay}" 
                     Text="Attend event" 
                     Command="{Binding AttendCommand}"/>
-            <Button IsEnabled="{Binding UnAttendingBtnEnabled, Mode=TwoWay}" 
+                <Button IsEnabled="{Binding UnAttendingBtnEnabled, Mode=TwoWay}" 
                     Text="Unattend event" 
                     Command="{Binding AttendCommand}"
                     Grid.Column="1"/>
-        </Grid>
-    </StackLayout>
+            </Grid>
+        </StackLayout>
+    </AbsoluteLayout>
 </ContentPage>

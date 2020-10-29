@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SportPlanner.Extensions;
 using SportPlanner.Models;
 using SportPlanner.Services;
@@ -27,6 +29,8 @@ namespace SportPlanner.ViewModels
 
         private async void OnAttend(object obj)
         {
+            IsBusy = true;
+
             try
             {
                 var eventUser = @event.Users.FirstOrDefault(u => u.UserId == UserConstants.UserId);
@@ -36,7 +40,11 @@ namespace SportPlanner.ViewModels
                 }
                 else
                 {
-                    var newEventUser = new EventUser(UserConstants.UserId) { IsAttending = true };
+                    var newEventUser = new EventUser(UserConstants.UserId)
+                    {
+                        UserName = UserConstants.UserName,
+                        IsAttending = true
+                    };
                     @event.Users.Add(newEventUser);
                 }
 
@@ -46,6 +54,10 @@ namespace SportPlanner.ViewModels
             catch (Exception e)
             {
                 Debug.WriteLine("Failed to update event. " + e.Message);
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
