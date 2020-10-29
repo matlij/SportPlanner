@@ -36,7 +36,7 @@ namespace SportPlanner.Services
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
-                Path = $"{UriConstants.SportPlannerUri}/{@event}"
+                Path = $"{UriConstants.SportPlannerUri}/{@event.Id}"
             };
 
             var updateEventTask = @event.AsTaskUpdateEvent();
