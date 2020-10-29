@@ -30,6 +30,8 @@ namespace DataLayer
             using var context = new SportPlannerContext();
 
             return context.Events
+                .Include(e => e.EventUsers)
+                .ThenInclude(eu => eu.User)
                 .FirstOrDefault(e => e.Identifier == identifier)
                 .AsEventDto();
         }

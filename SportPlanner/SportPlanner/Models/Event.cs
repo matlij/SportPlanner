@@ -3,18 +3,6 @@ using System.Collections.ObjectModel;
 
 namespace SportPlanner.Models
 {
-    //public class UserEvent
-    //{
-    //    public UserEvent(Event @event, string userId)
-    //    {
-    //        Event = @event;
-    //        UserIsAttending = @event.UsersAttending.ContainsValue(userId);
-    //    }
-
-    //    public Event Event { get; }
-    //    public bool UserIsAttending { get; }
-    //}
-
     public class EventUser : IEquatable<EventUser>
     {
         public EventUser(string userId)
@@ -22,8 +10,9 @@ namespace SportPlanner.Models
             UserId = userId;
         }
 
-        public bool IsAttending { get; set; }
         public string UserId { get; }
+        public string UserName { get; set; }
+        public bool IsAttending { get; set; }
 
         public bool Equals(EventUser other)
         {

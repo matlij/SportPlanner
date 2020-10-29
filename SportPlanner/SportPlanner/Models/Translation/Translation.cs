@@ -45,7 +45,8 @@ namespace SportPlanner.Models.Translation
 
         private static EventUser CreateEventUser(EventUserDto eventUser) => new EventUser(eventUser.UserId)
         {
-            IsAttending = eventUser.IsAttending
+            IsAttending = eventUser.IsAttending,
+            UserName = eventUser.UserName
         };
 
         private static EventUserDto CreateEventUserDto(EventUser eventUser) => new EventUserDto

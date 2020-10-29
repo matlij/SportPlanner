@@ -93,7 +93,11 @@ namespace SportPlanner.ViewModels
                     Date = Date,
                     Users = new ObservableCollection<EventUser>
                     {
-                        new EventUser(UserConstants.UserId) { IsAttending = true}
+                        new EventUser(UserConstants.UserId) 
+                        { 
+                            IsAttending = true,
+                            UserName = UserConstants.UserName
+                        }
                     }
                 };
 

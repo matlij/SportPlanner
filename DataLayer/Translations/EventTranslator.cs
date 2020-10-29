@@ -51,7 +51,8 @@ namespace DataLayer.Models.Translations
             return new EventUserDto
             {
                 UserId = input.User.Identifier,
-                IsAttending = input.IsAttending
+                IsAttending = input.IsAttending,
+                UserName = input.User.Name
             };
         }
 
