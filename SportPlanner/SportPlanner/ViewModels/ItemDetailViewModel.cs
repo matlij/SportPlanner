@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using SportPlanner.Extensions;
 using SportPlanner.Models;
 using SportPlanner.Services;
 using Xamarin.Forms;
@@ -27,16 +27,15 @@ namespace SportPlanner.ViewModels
 
         private async void OnAttend(object obj)
         {
-            IsBusy = true;
-
             try
             {
+                IsBusy = true;
+
+                if (!bool.TryParse(obj.ToString(), out var isAttending))
+                    return;
+
                 var eventUser = @event.Users.FirstOrDefault(u => u.UserId == UserConstants.UserId);
-                if (eventUser != null)
-                {
-                    @event.Users.Remove(eventUser);
-                }
-                else
+                if (eventUser == null)
                 {
                     var newEventUser = new EventUser(UserConstants.UserId)
                     {
@@ -44,6 +43,10 @@ namespace SportPlanner.ViewModels
                         IsAttending = true
                     };
                     @event.Users.Add(newEventUser);
+                }
+                else
+                {
+                    eventUser.IsAttending = isAttending;
                 }
 
                 await _dataStore.UpdateAsync(@event);
@@ -60,6 +63,8 @@ namespace SportPlanner.ViewModels
         }
 
         public string Id { get; set; }
+
+        public ObservableCollection<EventUser> Users { get; set; } = new ObservableCollection<EventUser>();
 
         public Event Event
         {
@@ -112,7 +117,7 @@ namespace SportPlanner.ViewModels
             {
                 var @event = await _dataStore.GetAsync(itemId);
                 Id = @event.Id;
-                Title = $"{@event.EventType} {@event.Date.ToShortDateString()}";
+                Title = @event.EventType.ToString();
                 UpdateProperties(@event);
             }
             catch (Exception e)
@@ -125,10 +130,22 @@ namespace SportPlanner.ViewModels
         {
             Event = @event;
             TimeOfDay = @event.Date.TimeOfDay.ToString(@"hh\:mm");
-            var userIsAttending = @event.Users.ContainsValue(new EventUser(UserConstants.UserId));
-            AttendingBtnEnabled = !userIsAttending;
-            UnAttendingBtnEnabled = userIsAttending;
-            AttendingCount = @event.Users.Count;
+            AttendingCount = @event.Users.Count(u => u.IsAttending);
+            UpdateEventUserCollection(@event);
+
+            var user = @event.Users.FirstOrDefault(u => u.UserId == UserConstants.UserId);
+            var isAttending = user?.IsAttending ?? false;
+            AttendingBtnEnabled = !isAttending;
+            UnAttendingBtnEnabled = isAttending;
+        }
+
+        private void UpdateEventUserCollection(Event @event)
+        {
+            Users.Clear();
+            foreach (var eventUser in @event.Users)
+            {
+                Users.Add(eventUser);
+            }
         }
     }
 }
