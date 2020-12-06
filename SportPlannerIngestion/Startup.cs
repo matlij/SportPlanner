@@ -9,7 +9,10 @@ namespace SportPlannerIngestion
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddSingleton<IDataLayer, DataLayer.DataLayer>();
+            var password = System.Environment.GetEnvironmentVariable("dbMattiasLijPassword");
+            var connectionString = $"Server=tcp:sportplannerserver.database.windows.net,1433;Initial Catalog=sportplannerdb;Persist Security Info=False;User ID=mattiaslij;Password={password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            var dataLayer = new DataLayer.DataLayer(connectionString);
+            builder.Services.AddSingleton<IDataLayer>(dataLayer);
         }
     }
 }

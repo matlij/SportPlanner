@@ -15,9 +15,16 @@ namespace DataLayer
 {
     public class DataLayer : IDataLayer
     {
+        private readonly string _connectionString;
+
+        public DataLayer(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
         public ICollection<EventDto> Get()
         {
-            using var context = new SportPlannerContext();
+            using var context = new SportPlannerContext(_connectionString);
             var events = GetEvents(context);
 
             return events
@@ -27,7 +34,7 @@ namespace DataLayer
 
         public EventDto Get(string identifier)
         {
-            using var context = new SportPlannerContext();
+            using var context = new SportPlannerContext(_connectionString);
 
             return context.Events
                 .Include(e => e.EventUsers)
@@ -38,7 +45,7 @@ namespace DataLayer
 
         public ICollection<EventDto> GetByUser(string userIdentifier)
         {
-            using var context = new SportPlannerContext();
+            using var context = new SportPlannerContext(_connectionString);
 
             var events = GetEvents(context)
                 .Where(e => e.EventUsers
@@ -49,7 +56,7 @@ namespace DataLayer
 
         public async Task<EventDto> Store(TaskCreateEvent input)
         {
-            using var context = new SportPlannerContext();
+            using var context = new SportPlannerContext(_connectionString);
 
             var @event = input.AsEvent();
             var newUsers = GetEventUsers(context, @event, input.Users);
@@ -63,7 +70,7 @@ namespace DataLayer
 
         public async Task<EventDto> Update(TaskUpdateEvent input)
         {
-            using var context = new SportPlannerContext();
+            using var context = new SportPlannerContext(_connectionString);
 
             var existing = context.Events
                 .Include(e => e.EventUsers)
@@ -84,7 +91,7 @@ namespace DataLayer
 
         public async Task<bool> Delete(string identifier)
         {
-            using var context = new SportPlannerContext();
+            using var context = new SportPlannerContext(_connectionString);
 
             var eventToRemove = context.Events.Single(e => e.Identifier == identifier);
             if (eventToRemove == null)
