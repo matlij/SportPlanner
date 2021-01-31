@@ -16,9 +16,9 @@ namespace SportPlannerIngestion
 {
     public class SportPlannerAPI
     {
-        private readonly IDataLayer _dataLayer;
+        private readonly IDataAccess _dataLayer;
 
-        public SportPlannerAPI(IDataLayer dataLayer)
+        public SportPlannerAPI(IDataAccess dataLayer)
         {
             _dataLayer = dataLayer;
         }

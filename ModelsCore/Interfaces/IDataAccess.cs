@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ModelsCore.Interfaces
 {
-    public interface IDataLayer
+    public interface IDataAccess
     {
         Task<bool> Delete(string identifier);
         EventDto Get(string identifier);
