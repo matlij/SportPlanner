@@ -39,9 +39,10 @@ namespace SportPlanner.ViewModels
             try
             {
                 Items.Clear();
-                var items = await _dataStore.GetAsync(true);
+                var items = await _dataStore.GetAsync(forceRefresh: true);
                 foreach (var @event in items.OrderBy(i => i.Date))
                 {
+                    @event.CurrentUserIsAttending = UserIsAttendingEvent(@event);
                     Items.Add(@event);
                 }
             }
@@ -83,6 +84,14 @@ namespace SportPlanner.ViewModels
 
             // This will push the ItemDetailPage onto the navigation stack
             await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
+        }
+
+        private bool UserIsAttendingEvent(Event @event)
+        {
+            var user = @event.Users
+                .FirstOrDefault(u => u.UserId == UserConstants.UserId);
+
+            return user != null && user.IsAttending;
         }
     }
 }

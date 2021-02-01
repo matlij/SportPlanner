@@ -53,6 +53,7 @@ namespace SportPlanner.Models
         public string IconImage { get; private set; }
         public string Address { get; set; }
         public ObservableCollection<EventUser> Users { get; set; }
+        public bool CurrentUserIsAttending { get; set; }
     }
 
     public class User
