@@ -30,42 +30,53 @@
                           ColumnSpacing="15" 
                           x:DataType="model:Event" 
                           BackgroundColor="{Binding CurrentUserIsAttending, Converter={StaticResource BoolToColorConverter}}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Image 
-                                Grid.RowSpan="2"
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <Image  Grid.RowSpan="3"
                                 Source="{Binding IconImage}"
                                 Aspect="AspectFit" 
                                 HeightRequest="40"
                                 WidthRequest="40" />
-                            <Label
-                                Grid.Column="1"
+                        <Label  Grid.Column="1"
                                 Text="{Binding EventType}" 
                                 LineBreakMode="NoWrap" 
                                 Style="{DynamicResource ListItemTextStyle}" 
                                 FontSize="16"
                                 FontAttributes="Bold"/>
-                            <Label 
-                                Grid.Row="1"
+                        <Label  Grid.Row="1"
                                 Grid.Column="1"
-                                Text="{Binding DateAndDatesLeft}" 
+                                Text="{Binding DateString}" 
                                 LineBreakMode="NoWrap"
                                 Style="{DynamicResource ListItemDetailTextStyle}"
                                 FontSize="13" />
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer 
+                        <Label  Grid.Row="2"
+                                Grid.Column="1"
+                                Text="{Binding UsersAttending}" 
+                                LineBreakMode="NoWrap"
+                                Style="{DynamicResource ListItemDetailTextStyle}"
+                                FontSize="13" />
+                        <!--<Button Grid.Row="1"
+                                Grid.Column="2"
+                                HeightRequest="40"
+                                WidthRequest="20"
+                                Text="Attend" 
+                                FontSize="13" />-->
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer 
                                     NumberOfTapsRequired="1"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type local:ItemsViewModel}}, Path=ItemTapped}"		
                                     CommandParameter="{Binding .}">
-                                </TapGestureRecognizer>
-                            </Grid.GestureRecognizers>
-                        </Grid>
+                            </TapGestureRecognizer>
+                        </Grid.GestureRecognizers>
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

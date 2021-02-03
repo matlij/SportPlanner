@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace SportPlanner.Models
 {
@@ -48,14 +49,23 @@ namespace SportPlanner.Models
 
         public string Id { get; }
         public DateTime Date { get; set; }
-        public string DateAndDatesLeft { get => $"{Date.Day}/{Date.Month} - Days left: {(Date - DateTime.Now).Days}"; }
+        public string DateString { get => Date.ToShortDateString(); }
+        public string DaysLeft { get => $"Days left: {(Date - DateTime.Now).Days}"; }
         public EventType EventType { get; }
         public string IconImage { get; private set; }
         public string Address { get; set; }
         public ObservableCollection<EventUser> Users { get; set; }
         public bool CurrentUserIsAttending { get; set; }
+        //public int UsersAttending
+        //{
+        //    get { return ; }
+        //}
+        //public int UsersInvited
+        //{
+        //    get { return Users.Count; }
+        //}
+        public string UsersAttending { get => $"Attending: {Users.Count(u => u.IsAttending)} / {Users.Count}"; }
     }
-
     public class User
     {
         public User(string id)
