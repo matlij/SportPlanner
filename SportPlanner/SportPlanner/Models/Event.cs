@@ -56,14 +56,6 @@ namespace SportPlanner.Models
         public string Address { get; set; }
         public ObservableCollection<EventUser> Users { get; set; }
         public bool CurrentUserIsAttending { get; set; }
-        //public int UsersAttending
-        //{
-        //    get { return ; }
-        //}
-        //public int UsersInvited
-        //{
-        //    get { return Users.Count; }
-        //}
         public string UsersAttending { get => $"Attending: {Users.Count(u => u.IsAttending)} / {Users.Count}"; }
     }
     public class User
