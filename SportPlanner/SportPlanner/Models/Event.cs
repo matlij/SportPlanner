@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SportPlanner.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -61,7 +62,7 @@ namespace SportPlanner.Models
 
         public string Id { get; }
         public DateTime Date { get; set; }
-        public string DateString { get => Date.ToShortDateString(); }
+        public string DateString => $"{Date.TimeOfDay:hh\\:mm}, {Date.ToLongDateString()}";
         public string DaysLeft { get => $"Days left: {(Date - DateTime.Now).Days}"; }
         public EventType EventType { get; }
         public string IconImage { get; private set; }
