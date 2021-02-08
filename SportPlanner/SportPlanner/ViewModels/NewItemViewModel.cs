@@ -72,7 +72,7 @@ namespace SportPlanner.ViewModels
             {
                 Users.Clear();
                 var users = await _userDataStore.GetAsync(forceRefresh: true);
-                foreach (var user in users)
+                foreach (var user in users.Where(u => u.Id != UserConstants.UserId))
                 {
                     var taskAddEventUser = new TaskAddEventUser(user.Id)
                     {
@@ -137,7 +137,7 @@ namespace SportPlanner.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Save new event failed. Exception: " + ex);
+                Debug.WriteLine("Save new event failed. Exception: " + ex);
             }
             finally
             {
@@ -162,6 +162,9 @@ namespace SportPlanner.ViewModels
                 };
                 collection.Add(eventUser);
             }
+
+            var currentUser = new EventUser(UserConstants.UserId);
+            collection.Add(currentUser);
 
             return collection;
         }
