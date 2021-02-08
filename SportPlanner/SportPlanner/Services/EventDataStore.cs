@@ -10,11 +10,11 @@ using SportPlanner.Models.Translation;
 
 namespace SportPlanner.Services
 {
-    public class CloudStore : IDataStore<Event>
+    public class EventDataStore : IEventDataStore
     {
         private readonly IGenericRepository _repository;
 
-        public CloudStore(IGenericRepository repository)
+        public EventDataStore(IGenericRepository repository)
         {
             _repository = repository;
         }
@@ -23,7 +23,7 @@ namespace SportPlanner.Services
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
-                Path = $@"{UriConstants.SportPlannerUri}"
+                Path = $@"{UriConstants.EventUri}"
             };
 
             var createEventTask = @event.AsTaskCreateEvent();
@@ -36,7 +36,7 @@ namespace SportPlanner.Services
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
-                Path = $"{UriConstants.SportPlannerUri}/{@event.Id}"
+                Path = $"{UriConstants.EventUri}/{@event.Id}"
             };
 
             var updateEventTask = @event.AsTaskUpdateEvent();
@@ -54,7 +54,7 @@ namespace SportPlanner.Services
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
-                Path = $"{UriConstants.SportPlannerUri}/{id}"
+                Path = $"{UriConstants.EventUri}/{id}"
             };
 
             var result = await _repository.GetAsync<EventDto>(uri.ToString());
@@ -66,7 +66,7 @@ namespace SportPlanner.Services
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
-                Path = $"{UriConstants.SportPlannerUri}"
+                Path = $"{UriConstants.EventUri}"
             };
 
             return await GetEvents(uri);

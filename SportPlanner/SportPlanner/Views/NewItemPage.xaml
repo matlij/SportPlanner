@@ -1,20 +1,41 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:SportPlanner.ViewModels"  
+             xmlns:model="clr-namespace:SportPlanner.Models"
              x:Class="SportPlanner.Views.NewItemPage"
              Shell.PresentationMode="ModalAnimated"
              Title="New Item">
     <ContentPage.Content>
-        <StackLayout Spacing="3" Padding="15">
+        <StackLayout Spacing="10" Padding="15">
             <Label Text="Typ av event" FontSize="Medium" />
             <Picker Title="Event" ItemsSource="{Binding EventTypes}" SelectedItem="{Binding EventType}"/>
             <Label Text="Datum" FontSize="Medium" />
             <DatePicker MinimumDate="{Binding MinDate}" MaximumDate="{Binding MaxDate}" Date="{Binding Date, Mode=TwoWay}" />
+            <Label FontSize="Medium" Text="Invite players"></Label>
+            <CollectionView ItemsSource="{Binding Users}" 
+                                SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid x:DataType="model:TaskAddEventUser" Padding="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10*" />
+                            </Grid.ColumnDefinitions>
+                            <CheckBox IsChecked="{Binding Invited}"/>
+                            <Label VerticalTextAlignment="Center" Grid.Column="1" Text="{Binding Name}"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
             <StackLayout Orientation="Horizontal">
                 <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
                 <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
-    
+
 </ContentPage>

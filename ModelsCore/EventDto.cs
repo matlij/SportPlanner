@@ -4,6 +4,12 @@ using System.Collections.Generic;
 
 namespace ModelsCore
 {
+    public class UserDto
+    {
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+    }
+
     public class EventUserDto
     {
         public string UserId { get; set; }

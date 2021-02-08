@@ -7,6 +7,14 @@ namespace SportPlanner.Models.Translation
 {
     internal static class Translation
     {
+        internal static User AsUser(this UserDto userDto)
+        {
+            return new User(userDto.UserId)
+            {
+                Name = userDto.UserName
+            };
+        }
+
         internal static Event AsEvent(this EventDto eventDto)
         {
             return new Event(eventDto.Identifier, (EventType)eventDto.EventType)

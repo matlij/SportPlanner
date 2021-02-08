@@ -11,7 +11,11 @@ namespace SportPlanner.Services
         Task<bool> UpdateAsync(T item);
         Task<bool> DeleteAsync(string id);
         Task<T> GetAsync(string id);
-        Task<IEnumerable<T>> GetFromUserAsync(string userId, bool forceRefresh = false);
-        Task<IEnumerable<Event>> GetAsync(bool forceRefresh = false);
+        Task<IEnumerable<T>> GetAsync(bool forceRefresh = false);
+    }
+
+    public interface IEventDataStore : IDataStore<Event>
+    {
+        Task<IEnumerable<Event>> GetFromUserAsync(string userId, bool forceRefresh = false);
     }
 }

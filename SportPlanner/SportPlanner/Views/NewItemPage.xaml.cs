@@ -9,13 +9,22 @@ namespace SportPlanner.Views
 {
     public partial class NewItemPage : ContentPage
     {
+        private readonly NewItemViewModel _viewModel;
+
         public Item Item { get; set; }
 
         public NewItemPage()
         {
             InitializeComponent();
-            var dataStore = Appcontiner.Resolve<IDataStore<Event>>();
-            BindingContext = new NewItemViewModel(dataStore);
+            var eventDataStore = Appcontiner.Resolve<IEventDataStore>();
+            var userDataStore = Appcontiner.Resolve<IDataStore<User>>();
+            BindingContext = _viewModel = new NewItemViewModel(eventDataStore, userDataStore);
+        }
+
+        protected async override void OnAppearing()
+        {
+            base.OnAppearing();
+            await _viewModel.LoadUsers();
         }
     }
 }

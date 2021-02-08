@@ -11,7 +11,7 @@ namespace SportPlanner.Views
         public ItemDetailPage()
         {
             InitializeComponent();
-            var dataStore = Appcontiner.Resolve<IDataStore<Event>>();
+            var dataStore = Appcontiner.Resolve<IEventDataStore>();
             BindingContext = new ItemDetailViewModel(dataStore);
         }
     }

@@ -16,7 +16,8 @@ namespace SportPlanner.Bootstrap
             var builder = new ContainerBuilder();
 
             //DataStore
-            builder.RegisterType<CloudStore>().As<IDataStore<Event>>();
+            builder.RegisterType<EventDataStore>().As<IEventDataStore>();
+            builder.RegisterType<UserDataStore>().As<IDataStore<User>>();
 
             //Repositories
             builder.RegisterType<GenericRepository>().As<IGenericRepository>();

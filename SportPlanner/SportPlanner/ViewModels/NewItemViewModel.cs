@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using SportPlanner.Models;
 using SportPlanner.Services;
 using Xamarin.Forms;
@@ -9,46 +12,21 @@ namespace SportPlanner.ViewModels
 {
     public class NewItemViewModel : BaseViewModel
     {
-        private ObservableCollection<EventType> eventTypes = new ObservableCollection<EventType>();
+        private ObservableCollection<EventType> _eventTypes = new ObservableCollection<EventType>();
+        private ObservableCollection<TaskAddEventUser> _users = new ObservableCollection<TaskAddEventUser>();
         private EventType eventType;
         private DateTime date;
-        private readonly IDataStore<Event> _dataStore;
+        private readonly IDataStore<Event> _eventDataStore;
+        private readonly IDataStore<User> _userDataStore;
 
         public string Id { get; set; }
+        public Command SaveCommand { get; }
+        public Command CancelCommand { get; }
 
-        public NewItemViewModel(IDataStore<Event> dataStore)
+        public ObservableCollection<TaskAddEventUser> Users
         {
-            SaveCommand = new Command(OnSave, ValidateSave);
-            CancelCommand = new Command(OnCancel);
-            this.PropertyChanged +=
-                (_, __) => SaveCommand.ChangeCanExecute();
-
-            Date = DateTime.Now;
-            PopulateEventTypes();
-            _dataStore = dataStore;
-        }
-
-        private void PopulateEventTypes()
-        {
-            var eventTypes = Enum.GetValues(typeof(EventType)).Cast<EventType>().Skip(1);
-            foreach (var @event in eventTypes)
-            {
-                EventTypes.Add(@event);
-            }
-        }
-
-        private bool ValidateSave()
-        {
-            return
-                date != null &&
-                date != DateTime.MinValue &&
-                eventType != EventType.Undefined;
-        }
-
-        public ObservableCollection<EventType> EventTypes
-        {
-            get => eventTypes;
-            set => SetProperty(ref eventTypes, value);
+            get => _users;
+            set => SetProperty(ref _users, value);
         }
 
         public EventType EventType
@@ -73,8 +51,69 @@ namespace SportPlanner.ViewModels
             get => DateTime.Now.AddDays(365);
         }
 
-        public Command SaveCommand { get; }
-        public Command CancelCommand { get; }
+        public NewItemViewModel(IDataStore<Event> dataStore, IDataStore<User> userDataStore)
+        {
+            SaveCommand = new Command(OnSave, ValidateSave);
+            CancelCommand = new Command(OnCancel);
+            this.PropertyChanged +=
+                (_, __) => SaveCommand.ChangeCanExecute();
+
+            Date = DateTime.Now;
+            _eventDataStore = dataStore;
+            _userDataStore = userDataStore;
+            PopulateEventTypes();
+        }
+
+        public async Task LoadUsers()
+        {
+            IsBusy = true;
+
+            try
+            {
+                Users.Clear();
+                var users = await _userDataStore.GetAsync(forceRefresh: true);
+                foreach (var user in users)
+                {
+                    var taskAddEventUser = new TaskAddEventUser(user.Id)
+                    {
+                        Name = user.Name,
+                        Invited = true
+                    };
+                    Users.Add(taskAddEventUser);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Load users failed: " + e);
+            }
+            finally
+            { 
+                IsBusy = false;
+            }
+        }
+
+        private void PopulateEventTypes()
+        {
+            var eventTypes = Enum.GetValues(typeof(EventType)).Cast<EventType>().Skip(1);
+            foreach (var @event in eventTypes)
+            {
+                EventTypes.Add(@event);
+            }
+        }
+
+        private bool ValidateSave()
+        {
+            return
+                date != null &&
+                date != DateTime.MinValue &&
+                eventType != EventType.Undefined;
+        }
+
+        public ObservableCollection<EventType> EventTypes
+        {
+            get => _eventTypes;
+            set => SetProperty(ref _eventTypes, value);
+        }
 
         private async void OnCancel()
         {
@@ -91,17 +130,10 @@ namespace SportPlanner.ViewModels
                 var newItem = new Event(Guid.NewGuid().ToString(), EventType)
                 {
                     Date = Date,
-                    Users = new ObservableCollection<EventUser>
-                    {
-                        new EventUser(UserConstants.UserId) 
-                        { 
-                            IsAttending = true,
-                            UserName = UserConstants.UserName
-                        }
-                    }
+                    Users = CreateEventUsers(_users)
                 };
 
-                await _dataStore.AddAsync(newItem);
+                await _eventDataStore.AddAsync(newItem);
             }
             catch (Exception ex)
             {
@@ -115,6 +147,23 @@ namespace SportPlanner.ViewModels
                 await Shell.Current.GoToAsync("..");
             }
 
+        }
+
+        private static ObservableCollection<EventUser> CreateEventUsers(IEnumerable<TaskAddEventUser> users)
+        {
+            var collection = new ObservableCollection<EventUser>();
+            var invitedUsers = users.Where(u => u.Invited);
+            foreach (var user in invitedUsers)
+            {
+                var eventUser = new EventUser(user.Id)
+                {
+                    IsAttending = false,
+                    UserName = user.Name
+                };
+                collection.Add(eventUser);
+            }
+
+            return collection;
         }
     }
 }

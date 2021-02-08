@@ -11,13 +11,13 @@ using SportPlannerIngestion.DataLayer.Data;
 using SportPlannerIngestion.DataLayer.Models.Translations;
 using SportPlannerIngestion.DataLayer.Models;
 
-namespace SportPlannerIngestion.DataLayer
+namespace SportPlannerIngestion.DataLayer.DataAccess
 {
-    public class DataAccess : IDataAccess
+    public class EventDataAccess : IEventDataAccess
     {
         private readonly string _connectionString;
 
-        public DataAccess(string connectionString)
+        public EventDataAccess(string connectionString)
         {
             _connectionString = connectionString;
         }

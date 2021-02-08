@@ -12,15 +12,15 @@ using ModelsCore.TaskModels;
 using ModelsCore;
 using ModelsCore.Interfaces;
 
-namespace SportPlannerIngestion
+namespace SportPlannerIngestion.API
 {
-    public class SportPlannerAPI
+    public class EventController
     {
-        private readonly IDataAccess _dataLayer;
+        private readonly IEventDataAccess _dataAccess;
 
-        public SportPlannerAPI(IDataAccess dataLayer)
+        public EventController(IEventDataAccess dataAccess)
         {
-            _dataLayer = dataLayer;
+            _dataAccess = dataAccess;
         }
 
         [FunctionName("GetAll")]
@@ -30,7 +30,7 @@ namespace SportPlannerIngestion
         {
             log.LogInformation("Getting all events");
 
-            var events = _dataLayer.Get();
+            var events = _dataAccess.Get();
 
             return new OkObjectResult(events);
         }
@@ -45,7 +45,7 @@ namespace SportPlannerIngestion
 
             log.LogInformation("Getting Event with id " + id);
 
-            var @event = _dataLayer.Get(id);
+            var @event = _dataAccess.Get(id);
 
             if (@event != null)
             {
@@ -67,7 +67,7 @@ namespace SportPlannerIngestion
 
             try
             {
-                var events = _dataLayer.GetByUser(userid);
+                var events = _dataAccess.GetByUser(userid);
                 return new OkObjectResult(events);
             }
             catch (Exception e)
@@ -90,7 +90,7 @@ namespace SportPlannerIngestion
 
             var input = JsonConvert.DeserializeObject<TaskCreateEvent>(requestBody);
 
-            var result = await _dataLayer.Store(input);
+            var result = await _dataAccess.Store(input);
             if (result == null)
                 return new InternalServerErrorResult();
 
@@ -111,7 +111,7 @@ namespace SportPlannerIngestion
             var input = JsonConvert.DeserializeObject<TaskUpdateEvent>(requestBody);
 
             input.Identifier = id;
-            var result = await _dataLayer.Update(input);
+            var result = await _dataAccess.Update(input);
             if (result == null)
                 return new InternalServerErrorResult();
 
@@ -128,7 +128,7 @@ namespace SportPlannerIngestion
 
             log.LogInformation("deleting Event");
 
-            var result = await _dataLayer.Delete(id);
+            var result = await _dataAccess.Delete(id);
             if (result == false)
             {
                 return new NotFoundObjectResult(id);
