@@ -1,5 +1,4 @@
 ﻿using ModelsCore;
-using ModelsCore.TaskModels;
 using SportPlanner.Extensions;
 using System.Linq;
 
@@ -31,36 +30,21 @@ namespace SportPlanner.Models.Translation
             Address = @event.Address,
             Date = @event.Date,
             EventType = (ModelsCore.Enums.EventType)@event.EventType,
-            Users = @event.Users.Select(CreateEventUserDto).ToList()
-        };
-
-        internal static TaskCreateEvent AsTaskCreateEvent(this Event @event) => new TaskCreateEvent
-        {
-            Address = @event.Address,
-            Date = @event.Date,
-            EventType = (ModelsCore.Enums.EventType)@event.EventType,
-            Users = @event.Users.Select(CreateEventUserDto).ToList()
-        };
-
-        internal static TaskUpdateEvent AsTaskUpdateEvent(this Event @event) => new TaskUpdateEvent
-        {
-            Identifier = @event.Id,
-            Address = @event.Address,
-            Date = @event.Date,
-            EventType = (ModelsCore.Enums.EventType)@event.EventType,
-            Users = @event.Users.Select(CreateEventUserDto).ToList()
+            Users = @event.Users.Select(CreateEventUserDto).ToList(),
         };
 
         private static EventUser CreateEventUser(EventUserDto eventUser) => new EventUser(eventUser.UserId)
         {
             IsAttending = eventUser.IsAttending,
-            UserName = eventUser.UserName
+            UserName = eventUser.UserName,
+            IsOwner = eventUser.IsOwner
         };
 
         private static EventUserDto CreateEventUserDto(EventUser eventUser) => new EventUserDto
         {
             UserId = eventUser.UserId,
-            IsAttending = eventUser.IsAttending
+            IsAttending = eventUser.IsAttending,
+            IsOwner = eventUser.IsOwner
         };
     }
 }

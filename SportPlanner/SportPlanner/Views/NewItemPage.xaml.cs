@@ -11,8 +11,6 @@ namespace SportPlanner.Views
     {
         private readonly NewItemViewModel _viewModel;
 
-        public Item Item { get; set; }
-
         public NewItemPage()
         {
             InitializeComponent();

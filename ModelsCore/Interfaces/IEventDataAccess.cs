@@ -1,5 +1,4 @@
-﻿using ModelsCore.TaskModels;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ModelsCore.Interfaces
@@ -10,7 +9,7 @@ namespace ModelsCore.Interfaces
         EventDto Get(string identifier);
         ICollection<EventDto> Get();
         ICollection<EventDto> GetByUser(string userIdentifier);
-        Task<EventDto> Store(TaskCreateEvent input);
-        Task<EventDto> Update(TaskUpdateEvent input);
+        Task<EventDto> Store(EventDto input);
+        Task<EventDto> Update(EventDto input);
     }
 }

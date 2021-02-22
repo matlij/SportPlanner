@@ -26,8 +26,8 @@ namespace SportPlanner.Services
                 Path = $@"{UriConstants.EventUri}"
             };
 
-            var createEventTask = @event.AsTaskCreateEvent();
-            await _repository.PostAsync(uri.ToString(), createEventTask);
+            var eventDto = @event.AsEventDto();
+            await _repository.PostAsync(uri.ToString(), eventDto);
 
             return await Task.FromResult(true);
         }
@@ -39,8 +39,8 @@ namespace SportPlanner.Services
                 Path = $"{UriConstants.EventUri}/{@event.Id}"
             };
 
-            var updateEventTask = @event.AsTaskUpdateEvent();
-            await _repository.PutAsync(uri.ToString(), updateEventTask);
+            var eventDto = @event.AsEventDto();
+            await _repository.PutAsync(uri.ToString(), eventDto);
 
             return await Task.FromResult(true);
         }

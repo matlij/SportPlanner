@@ -1,5 +1,4 @@
-﻿using SportPlanner.Extensions;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -27,6 +26,7 @@ namespace SportPlanner.Models
         public string UserId { get; }
         public string UserName { get; set; }
         public bool IsAttending { get; set; }
+        public bool IsOwner { get; set; }
 
         public bool Equals(EventUser other)
         {

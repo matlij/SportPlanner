@@ -15,6 +15,7 @@ namespace ModelsCore
         public string UserId { get; set; }
         public string UserName { get; set; }
         public bool IsAttending { get; set; }
+        public bool IsOwner { get; set; }
     }
 
     public class EventDto
@@ -24,5 +25,6 @@ namespace ModelsCore
         public EventType EventType { get; set; }
         public string Address { get; set; }
         public ICollection<EventUserDto> Users { get; set; }
+        public string Owner { get; set; }
     }
 }

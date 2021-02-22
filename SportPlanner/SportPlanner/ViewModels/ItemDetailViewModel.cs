@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SportPlanner.Models;
 using SportPlanner.Services;
+using SportPlanner.Views;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
@@ -19,10 +20,28 @@ namespace SportPlanner.ViewModels
         private int attendingCount;
         private readonly IDataStore<Event> _dataStore;
 
+        public Command EditItemCommand { get; }
+
         public ItemDetailViewModel(IDataStore<Event> dataStore)
         {
             AttendCommand = new Command(OnAttend);
             _dataStore = dataStore;
+            EditItemCommand = new Command(OnEditItemTapped, CanEditItem);
+        }
+
+        private bool CanEditItem(object arg)
+        {
+            if (@event == null)
+                return false;
+
+            return @event.Users
+                .Where(u => u.IsOwner)
+                .Any(u => u.UserId == UserConstants.UserId);
+        }
+
+        private async void OnEditItemTapped(object obj)
+        {
+            await Shell.Current.GoToAsync($"{nameof(NewItemPage)}?{nameof(NewItemViewModel.ItemId)}={Id}");
         }
 
         private async void OnAttend(object obj)
@@ -69,7 +88,11 @@ namespace SportPlanner.ViewModels
         public Event Event
         {
             get => @event;
-            set => SetProperty(ref @event, value);
+            set 
+            { 
+                SetProperty(ref @event, value);
+                EditItemCommand.ChangeCanExecute();
+            }
         }
 
         public string TimeOfDay

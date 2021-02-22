@@ -8,11 +8,22 @@ namespace SportPlanner.Views
 {
     public partial class ItemDetailPage : ContentPage
     {
+        private ItemDetailViewModel _viewModel;
+
         public ItemDetailPage()
         {
             InitializeComponent();
             var dataStore = Appcontiner.Resolve<IEventDataStore>();
-            BindingContext = new ItemDetailViewModel(dataStore);
+            BindingContext = _viewModel = new ItemDetailViewModel(dataStore);
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            if (_viewModel.Id != null)
+            {
+                _viewModel.LoadItemId(_viewModel.Id);
+            }
         }
     }
 }

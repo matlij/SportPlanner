@@ -34,5 +34,7 @@ namespace SportPlannerIngestion.DataLayer.Models
         public Event Event { get; set; }
         public User User { get; set; }
         public bool IsAttending { get; set; }
+        [Required]
+        public bool IsOwner { get; set; }
     }
 }

@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore.Query;
 using ModelsCore;
 using ModelsCore.Exceptions;
 using ModelsCore.Interfaces;
-using ModelsCore.TaskModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SportPlannerIngestion.DataLayer.Data;
 using SportPlannerIngestion.DataLayer.Models.Translations;
 using SportPlannerIngestion.DataLayer.Models;
+using System;
 
 namespace SportPlannerIngestion.DataLayer.DataAccess
 {
@@ -36,9 +36,7 @@ namespace SportPlannerIngestion.DataLayer.DataAccess
         {
             using var context = new SportPlannerContext(_connectionString);
 
-            return context.Events
-                .Include(e => e.EventUsers)
-                .ThenInclude(eu => eu.User)
+            return GetEvents(context)
                 .FirstOrDefault(e => e.Identifier == identifier)
                 .AsEventDto();
         }
@@ -54,27 +52,24 @@ namespace SportPlannerIngestion.DataLayer.DataAccess
             return events.Select(e => e.AsEventDto()).ToList();
         }
 
-        public async Task<EventDto> Store(TaskCreateEvent input)
+        public async Task<EventDto> Store(EventDto input)
         {
             using var context = new SportPlannerContext(_connectionString);
 
-            var @event = input.AsEvent();
-            var newUsers = GetEventUsers(context, @event, input.Users);
-            @event.EventUsers = newUsers;
-
-            context.Add(@event);
-            await context.SaveChangesAsync();
-
-            return @event.AsEventDto();
+            return await StoreEvent(context, input);
         }
 
-        public async Task<EventDto> Update(TaskUpdateEvent input)
+        public async Task<EventDto> Update(EventDto input)
         {
             using var context = new SportPlannerContext(_connectionString);
 
             var existing = context.Events
                 .Include(e => e.EventUsers)
-                .Single(e => e.Identifier == input.Identifier);
+                .SingleOrDefault(e => e.Identifier == input.Identifier);
+            if (existing == null)
+            {
+                return await StoreEvent(context, input);
+            }
 
             var newUsers = GetEventUsers(context, existing, input.Users);
             if (existing.EventUsers != null)
@@ -111,35 +106,62 @@ namespace SportPlannerIngestion.DataLayer.DataAccess
             return true;
         }
 
+        private static async Task<EventDto> StoreEvent(SportPlannerContext context, EventDto input)
+        {
+            if (string.IsNullOrEmpty(input.Identifier))
+            {
+                input.Identifier = Guid.NewGuid().ToString();
+            }
+
+            var @event = input.AsEvent();
+
+            var eventUsers = GetEventUsers(context, @event, input.Users);
+            @event.EventUsers = eventUsers;
+
+            context.Add(@event);
+            await context.SaveChangesAsync();
+
+            return @event.AsEventDto();
+        }
+
         private static ICollection<EventUser> GetEventUsers(SportPlannerContext context, Event @event, IEnumerable<EventUserDto> inputUsers)
         {
-            var newUsers = new List<EventUser>();
+            var eventUsers = new List<EventUser>();
             if (inputUsers == null)
             {
-                return newUsers;
+                return eventUsers;
             }
 
             foreach (var inputEventUser in inputUsers)
             {
-                User existingUser = GetUserFromSource(context, inputEventUser);
+                var existingUser = GetUserFromSource(context, inputEventUser.UserId);
                 var newEventUser = new EventUser
                 {
-                    User = existingUser,
-                    Event = @event,
-                    IsAttending = inputEventUser.IsAttending
+                    UserId = existingUser.Id,
+                    IsAttending = inputEventUser.IsAttending,
+                    IsOwner = inputEventUser.IsOwner
                 };
-                newUsers.Add(newEventUser);
+                if (@event.Id != default)
+                {
+                    newEventUser.EventId = @event.Id;
+                }
+                else
+                {
+                    newEventUser.Event = @event;
+                }
+
+                eventUsers.Add(newEventUser);
             }
 
-            return newUsers;
+            return eventUsers;
         }
 
-        private static User GetUserFromSource(SportPlannerContext context, EventUserDto inputEventUser)
+        private static User GetUserFromSource(SportPlannerContext context, string userId)
         {
-            var user = context.Users.FirstOrDefault(u => u.Identifier == inputEventUser.UserId);
+            var user = context.Users.FirstOrDefault(u => u.Identifier == userId);
             if (user == null)
             {
-                throw new BadInputException("Couldn't find user with id: " + inputEventUser.UserId);
+                throw new BadInputException("Couldn't find user with id: " + userId);
             }
 
             return user;

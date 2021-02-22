@@ -8,7 +8,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ModelsCore.TaskModels;
 using ModelsCore;
 using ModelsCore.Interfaces;
 
@@ -88,7 +87,7 @@ namespace SportPlannerIngestion.API
             if (string.IsNullOrEmpty(requestBody))
                 return new BadRequestObjectResult("Request body is null or empty");
 
-            var input = JsonConvert.DeserializeObject<TaskCreateEvent>(requestBody);
+            var input = JsonConvert.DeserializeObject<EventDto>(requestBody);
 
             var result = await _dataAccess.Store(input);
             if (result == null)
@@ -108,7 +107,7 @@ namespace SportPlannerIngestion.API
             log.LogInformation("Updating Event");
 
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var input = JsonConvert.DeserializeObject<TaskUpdateEvent>(requestBody);
+            var input = JsonConvert.DeserializeObject<EventDto>(requestBody);
 
             input.Identifier = id;
             var result = await _dataAccess.Update(input);

@@ -1,6 +1,5 @@
 ﻿using ModelsCore;
 using ModelsCore.Enums;
-using ModelsCore.TaskModels;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,6 +7,21 @@ namespace SportPlannerIngestion.DataLayer.Models.Translations
 {
     public static class EventTranslator
     {
+        public static Event AsEvent(this EventDto input)
+        {
+            return new Event
+            {
+                Identifier = input.Identifier,
+                Address = input.Address,
+                Date = input.Date,
+                EventType = (int)input.EventType,
+                //Owner = new User { Identifier = input.Owner },
+                EventUsers = input.Users != null
+                    ? input.Users.Select(u => AsEventUser(input.Identifier, u)).ToList()
+                    : new List<EventUser>()
+            };
+        }
+
         public static EventDto AsEventDto(this Event input)
         {
             return new EventDto
@@ -18,31 +32,8 @@ namespace SportPlannerIngestion.DataLayer.Models.Translations
                 EventType = (EventType)input.EventType,
                 Users = input.EventUsers != null
                     ? input.EventUsers.Select(AsEventUserDto).ToList()
-                    : new List<EventUserDto>()
-            };
-        }
-
-        public static Event AsEvent(this TaskUpdateEvent input)
-        {
-            return new Event
-            {
-                Identifier = input.Identifier,
-                Address = input.Address,
-                Date = input.Date,
-                EventType = (int)input.EventType,
-                EventUsers = input.Users != null
-                    ? input.Users.Select(u => AsEventUser(input.Identifier, u)).ToList()
-                    : new List<EventUser>()
-            };
-        }
-
-        public static Event AsEvent(this TaskCreateEvent input)
-        {
-            return new Event
-            {
-                Address = input.Address,
-                Date = input.Date,
-                EventType = (int)input.EventType
+                    : new List<EventUserDto>(),
+                //Owner = input.Owner.Identifier
             };
         }
 
@@ -52,7 +43,8 @@ namespace SportPlannerIngestion.DataLayer.Models.Translations
             {
                 UserId = input.User.Identifier,
                 IsAttending = input.IsAttending,
-                UserName = input.User.Name
+                UserName = input.User.Name,
+                IsOwner = input.IsOwner
             };
         }
 
@@ -62,7 +54,8 @@ namespace SportPlannerIngestion.DataLayer.Models.Translations
             {
                 User = new User { Identifier = input.UserId },
                 Event = new Event { Identifier = eventIdentifier },
-                IsAttending = input.IsAttending
+                IsAttending = input.IsAttending,
+                IsOwner = input.IsOwner
             };
         }
     }

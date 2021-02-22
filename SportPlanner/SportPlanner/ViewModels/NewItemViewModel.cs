@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using SportPlanner.Models;
 using SportPlanner.Services;
@@ -10,23 +11,54 @@ using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
 {
+    [QueryProperty(nameof(ItemId), nameof(ItemId))]
     public class NewItemViewModel : BaseViewModel
     {
+        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+        private List<EventUser> _invitedUsers = new List<EventUser>();
         private ObservableCollection<EventType> _eventTypes = new ObservableCollection<EventType>();
         private ObservableCollection<TaskAddEventUser> _users = new ObservableCollection<TaskAddEventUser>();
         private EventType eventType;
         private DateTime date;
         private readonly IDataStore<Event> _eventDataStore;
         private readonly IDataStore<User> _userDataStore;
+        private string _itemId;
 
-        public string Id { get; set; }
         public Command SaveCommand { get; }
         public Command CancelCommand { get; }
+        public string Id { get; set; }
+
+        public NewItemViewModel(IDataStore<Event> dataStore, IDataStore<User> userDataStore)
+        {
+            SaveCommand = new Command(OnSave, ValidateSave);
+            CancelCommand = new Command(OnCancel);
+            this.PropertyChanged +=
+                (_, __) => SaveCommand.ChangeCanExecute();
+
+            Date = DateTime.Now;
+            _eventDataStore = dataStore;
+            _userDataStore = userDataStore;
+            PopulateEventTypes();
+        }
 
         public ObservableCollection<TaskAddEventUser> Users
         {
             get => _users;
             set => SetProperty(ref _users, value);
+        }
+
+        public string ItemId
+        {
+            get
+            {
+                return _itemId;
+            }
+            set
+            {
+                _itemId = value;
+                LoadItemId(value);
+            }
         }
 
         public EventType EventType
@@ -51,44 +83,60 @@ namespace SportPlanner.ViewModels
             get => DateTime.Now.AddDays(365);
         }
 
-        public NewItemViewModel(IDataStore<Event> dataStore, IDataStore<User> userDataStore)
+        public ObservableCollection<EventType> EventTypes
         {
-            SaveCommand = new Command(OnSave, ValidateSave);
-            CancelCommand = new Command(OnCancel);
-            this.PropertyChanged +=
-                (_, __) => SaveCommand.ChangeCanExecute();
-
-            Date = DateTime.Now;
-            _eventDataStore = dataStore;
-            _userDataStore = userDataStore;
-            PopulateEventTypes();
+            get => _eventTypes;
+            set => SetProperty(ref _eventTypes, value);
         }
 
         public async Task LoadUsers()
         {
+            Debug.WriteLine($"Loading users");
+
             IsBusy = true;
 
             try
             {
                 Users.Clear();
                 var users = await _userDataStore.GetAsync(forceRefresh: true);
-                foreach (var user in users.Where(u => u.Id != UserConstants.UserId))
-                {
-                    var taskAddEventUser = new TaskAddEventUser(user.Id)
-                    {
-                        Name = user.Name,
-                        Invited = true
-                    };
-                    Users.Add(taskAddEventUser);
-                }
+
+                await _semaphoreSlim.WaitAsync();
+                Debug.WriteLine($"Populating users list");
+                Users = CreateUsersList(users, _invitedUsers);
             }
             catch (Exception e)
             {
                 Debug.WriteLine("Load users failed: " + e);
             }
             finally
-            { 
+            {
                 IsBusy = false;
+                _semaphoreSlim.Release();
+            }
+        }
+
+        public async void LoadItemId(string itemId)
+        {
+            Debug.WriteLine($"Loading event with ID: " + itemId);
+
+            try
+            {
+                await _semaphoreSlim.WaitAsync();
+
+                var @event = await _eventDataStore.GetAsync(itemId);
+                _invitedUsers = @event.Users.ToList();
+                Id = @event.Id;
+                Title = @event.EventType.ToString();
+                Date = @event.Date;
+                EventType = @event.EventType;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Failed to Load Item. " + e.Message);
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
             }
         }
 
@@ -109,12 +157,6 @@ namespace SportPlanner.ViewModels
                 eventType != EventType.Undefined;
         }
 
-        public ObservableCollection<EventType> EventTypes
-        {
-            get => _eventTypes;
-            set => SetProperty(ref _eventTypes, value);
-        }
-
         private async void OnCancel()
         {
             // This will pop the current page off the navigation stack
@@ -125,48 +167,83 @@ namespace SportPlanner.ViewModels
         {
             IsBusy = true;
 
+            var identifier = string.IsNullOrEmpty(Id)
+                ? Guid.NewGuid().ToString()
+                : Id;
+
             try
             {
-                var newItem = new Event(Guid.NewGuid().ToString(), EventType)
+                var usersToInvite = Users.Where(u => u.Invited);
+                var newItem = new Event(identifier, EventType)
                 {
                     Date = Date,
-                    Users = CreateEventUsers(_users)
+                    Users = CreateEventUsers(usersToInvite, _invitedUsers)
                 };
 
-                await _eventDataStore.AddAsync(newItem);
+                await _eventDataStore.UpdateAsync(newItem);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Save new event failed. Exception: " + ex);
+                Debug.WriteLine("Save or update event failed. Exception: " + ex);
             }
             finally
             {
                 IsBusy = false;
 
-                // This will pop the current page off the navigation stack
-                await Shell.Current.GoToAsync("..");
+                await Shell.Current.GoToAsync($"..?{nameof(ItemDetailViewModel.ItemId)}={identifier}");
             }
 
         }
 
-        private static ObservableCollection<EventUser> CreateEventUsers(IEnumerable<TaskAddEventUser> users)
+        private static ObservableCollection<EventUser> CreateEventUsers(IEnumerable<TaskAddEventUser> usersToInvite, IEnumerable<EventUser> currentlyInvitedUsers)
         {
             var collection = new ObservableCollection<EventUser>();
-            var invitedUsers = users.Where(u => u.Invited);
-            foreach (var user in invitedUsers)
+            foreach (var userToInvite in usersToInvite)
             {
-                var eventUser = new EventUser(user.Id)
+                var eventUser = new EventUser(userToInvite.Id)
                 {
-                    IsAttending = false,
-                    UserName = user.Name
+                    IsAttending = IsAttencding(currentlyInvitedUsers, userToInvite.Id),
+                    UserName = userToInvite.Name
                 };
                 collection.Add(eventUser);
             }
 
-            var currentUser = new EventUser(UserConstants.UserId);
+            var currentUser = new EventUser(UserConstants.UserId)
+            {
+                IsAttending = IsAttencding(currentlyInvitedUsers, UserConstants.UserId),
+                IsOwner = true
+            };
             collection.Add(currentUser);
 
             return collection;
+        }
+
+        private static bool IsAttencding(IEnumerable<EventUser> currentlyInvitedUsers, string userIdToInvite)
+        {
+            return currentlyInvitedUsers
+                .SingleOrDefault(eu => eu.UserId == userIdToInvite)?
+                .IsAttending ?? false;
+        }
+
+        private static ObservableCollection<TaskAddEventUser> CreateUsersList(IEnumerable<User> usersInTeam, IEnumerable<EventUser> invitedUsers)
+        {
+            var users = new ObservableCollection<TaskAddEventUser>();
+            if (usersInTeam.Count() == 0)
+                return users;
+
+            var usersWithOwnerRemoved = usersInTeam.Where(u => u.Id != UserConstants.UserId);
+            foreach (var user in usersWithOwnerRemoved)
+            {
+                var isInvited = invitedUsers.Any(eu => eu.UserId == user.Id);
+                var taskAddEventUser = new TaskAddEventUser(user.Id)
+                {
+                    Name = user.Name,
+                    Invited = isInvited
+                };
+                users.Add(taskAddEventUser);
+            }
+
+            return users;
         }
     }
 }
