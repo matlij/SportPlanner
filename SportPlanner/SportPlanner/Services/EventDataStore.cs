@@ -47,7 +47,14 @@ namespace SportPlanner.Services
 
         public async Task<bool> DeleteAsync(string id)
         {
-            return await Task.FromResult(false);
+            var uri = new UriBuilder(UriConstants.BaseUri)
+            {
+                Path = $"{UriConstants.EventUri}/{id}"
+            };
+
+            var result = await _repository.DeleteAsync(uri.ToString());
+
+            return await Task.FromResult(result);
         }
 
         public async Task<Event> GetAsync(string id)

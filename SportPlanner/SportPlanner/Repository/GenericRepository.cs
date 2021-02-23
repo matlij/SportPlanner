@@ -74,5 +74,15 @@ namespace FlippinTen.Core.Repository
                 return response.IsSuccessStatusCode;
             }
         }
+
+        public async Task<bool> DeleteAsync(string requestUri)
+        {
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage response = await client.DeleteAsync(requestUri);
+
+                return response.IsSuccessStatusCode;
+            }
+        }
     }
 }

@@ -21,12 +21,14 @@ namespace SportPlanner.ViewModels
         private readonly IDataStore<Event> _dataStore;
 
         public Command EditItemCommand { get; }
+        public Command DeleteCommand { get; }
 
         public ItemDetailViewModel(IDataStore<Event> dataStore)
         {
-            AttendCommand = new Command(OnAttend);
             _dataStore = dataStore;
+            AttendCommand = new Command(OnAttend);
             EditItemCommand = new Command(OnEditItemTapped, CanEditItem);
+            DeleteCommand = new Command(OnDelete, CanEditItem);
         }
 
         private bool CanEditItem(object arg)
@@ -92,6 +94,7 @@ namespace SportPlanner.ViewModels
             { 
                 SetProperty(ref @event, value);
                 EditItemCommand.ChangeCanExecute();
+                DeleteCommand.ChangeCanExecute();
             }
         }
 
@@ -146,6 +149,33 @@ namespace SportPlanner.ViewModels
             catch (Exception e)
             {
                 Debug.WriteLine("Failed to Load Item. " + e.Message);
+            }
+        }
+
+        private async void OnDelete(object obj)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(ItemId))
+                    return;
+
+                var shouldDelete = await Application.Current.MainPage.DisplayAlert("Delete event", "Are you sure you want to delete?", "Yes", "Cancel");
+                if (!shouldDelete)
+                    return;
+
+                IsBusy = true;
+
+                await _dataStore.DeleteAsync(ItemId);
+
+                await Shell.Current.GoToAsync($"../..");
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine($"Delete event '{ItemId}' failed");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

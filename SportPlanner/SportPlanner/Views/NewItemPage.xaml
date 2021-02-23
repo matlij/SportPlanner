@@ -8,7 +8,7 @@
              Title="New Item">
     <ContentPage.Content>
         <StackLayout Spacing="10" Padding="15">
-            <Label Text="Typ av event" FontSize="Medium" />
+            <Label Text="Type of event" FontSize="Medium" />
             <Picker Title="Event" ItemsSource="{Binding EventTypes}" SelectedItem="{Binding EventType}"/>
             <Label Text="Datum" FontSize="Medium" />
             <DatePicker MinimumDate="{Binding MinDate}" MaximumDate="{Binding MaxDate}" Date="{Binding Date, Mode=TwoWay}" />
@@ -33,9 +33,8 @@
             </CollectionView>
             <StackLayout Orientation="Horizontal">
                 <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
-                <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
+                <Button Text="Save" BackgroundColor="Green" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
-
 </ContentPage>

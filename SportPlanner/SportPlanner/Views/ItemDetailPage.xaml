@@ -11,7 +11,8 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Edit" Command="{Binding EditItemCommand}" />
+        <ToolbarItem Priority="1" IconImageSource="icon_edit.png" Command="{Binding EditItemCommand}" />
+        <ToolbarItem Priority="2" IconImageSource="icon_trash.png" Command="{Binding DeleteCommand}" />
     </ContentPage.ToolbarItems>
 
     <AbsoluteLayout Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
@@ -47,7 +48,7 @@
                             <ViewCell>
                                 <Grid ColumnSpacing="25">
                                     <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -68,25 +69,21 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+                <StackLayout Orientation="Horizontal">
+                    <Button IsEnabled="{Binding AttendingBtnEnabled, Mode=TwoWay}" 
+                            Text="Attend event" 
+                            Command="{Binding AttendCommand}"
+                            CommandParameter="True"
+                            BackgroundColor="Green"
+                            HorizontalOptions="FillAndExpand"/>
+                    <Button IsEnabled="{Binding UnAttendingBtnEnabled, Mode=TwoWay}" 
+                            Text="Unattend event" 
+                            Command="{Binding AttendCommand}"
+                            CommandParameter="False"
+                            BackgroundColor="Red"
+                            HorizontalOptions="FillAndExpand"/>
+                </StackLayout>
             </StackLayout>
-            <Grid Padding="10" ColumnSpacing="15" HorizontalOptions="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Button IsEnabled="{Binding AttendingBtnEnabled, Mode=TwoWay}" 
-                    Text="Attend event" 
-                    Command="{Binding AttendCommand}"
-                    CommandParameter="True"/>
-                <Button IsEnabled="{Binding UnAttendingBtnEnabled, Mode=TwoWay}" 
-                    Text="Unattend event" 
-                    Command="{Binding AttendCommand}"
-                    CommandParameter="False"
-                    Grid.Column="1"/>
-            </Grid>
         </StackLayout>
     </AbsoluteLayout>
 </ContentPage>
