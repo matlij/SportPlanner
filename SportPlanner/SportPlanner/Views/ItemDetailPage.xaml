@@ -7,6 +7,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:BooleanToSymbolConverter x:Key="BoolToSymbolConverter"/>
+            <converters:BoolToRedOrGreenConverter x:Key="BoolToRedOrGreenConverter"/>
             <converters:DateTimeConverter x:Key="DateTimeConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -31,14 +32,14 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Text="Date:" FontSize="16" FontAttributes="Bold" />
-                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Event.Date, Converter={StaticResource DateTimeConverter}}" FontSize="16"/>
+                <Label Grid.Row="0" Text="Type:" FontSize="16" FontAttributes="Bold" />
+                <Image Grid.Row="0" Grid.Column="1" Source="{Binding Event.IconImage}" HeightRequest="25" WidthRequest="25" HorizontalOptions="Start"/>
                 <Label Grid.Row="1" Text="Time:" FontSize="16" FontAttributes="Bold" />
                 <Label Grid.Row="1" Grid.Column="1" Text="{Binding TimeOfDay}" FontSize="16"/>
-                <Label Grid.Row="2" Text="Location:" FontSize="16" FontAttributes="Bold" />
-                <Label Grid.Row="2" Grid.Column="1" Text="TestVägen 1, Stockholm" FontSize="16"/>
-                <Label Grid.Row="3" Text="Attending:" FontSize="16" FontAttributes="Bold" />
-                <Label Grid.Row="3" Grid.Column="1" Text="{Binding AttendingCount}" FontSize="16"/>
+                <Label Grid.Row="2" Text="Date:" FontSize="16" FontAttributes="Bold" />
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Event.Date, Converter={StaticResource DateTimeConverter}}" FontSize="16"/>
+                <Label Grid.Row="3" Text="Location:" FontSize="16" FontAttributes="Bold" />
+                <Label Grid.Row="3" Grid.Column="1" Text="TestVägen 1, Stockholm" FontSize="16"/>
             </Grid>
             <StackLayout Spacing="15" Padding="10">
                 <Label Text="Invited" FontSize="16" FontAttributes="Bold"/>
@@ -70,17 +71,9 @@
                     </ListView.ItemTemplate>
                 </ListView>
                 <StackLayout Orientation="Horizontal">
-                    <Button IsEnabled="{Binding AttendingBtnEnabled, Mode=TwoWay}" 
-                            Text="Attend event" 
+                    <Button Text="{Binding AttendBtnText}"
                             Command="{Binding AttendCommand}"
-                            CommandParameter="True"
-                            BackgroundColor="Green"
-                            HorizontalOptions="FillAndExpand"/>
-                    <Button IsEnabled="{Binding UnAttendingBtnEnabled, Mode=TwoWay}" 
-                            Text="Unattend event" 
-                            Command="{Binding AttendCommand}"
-                            CommandParameter="False"
-                            BackgroundColor="Red"
+                            BackgroundColor="{Binding IsAttending, Converter={StaticResource BoolToRedOrGreenConverter}}"
                             HorizontalOptions="FillAndExpand"/>
                 </StackLayout>
             </StackLayout>

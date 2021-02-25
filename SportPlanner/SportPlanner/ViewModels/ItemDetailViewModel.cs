@@ -12,12 +12,12 @@ namespace SportPlanner.ViewModels
     [QueryProperty(nameof(ItemId), nameof(ItemId))]
     public class ItemDetailViewModel : BaseViewModel
     {
+        private Event @event;
         private string itemId;
         private string timeOfDay;
-        private Event @event;
-        private bool attendingBtnEnabled;
-        private bool unAttendingBtnEnabled;
-        private int attendingCount;
+        private string attendBtnText;
+        private bool isAttending;
+
         private readonly IDataStore<Event> _dataStore;
 
         public Command EditItemCommand { get; }
@@ -52,9 +52,6 @@ namespace SportPlanner.ViewModels
             {
                 IsBusy = true;
 
-                if (!bool.TryParse(obj.ToString(), out var isAttending))
-                    return;
-
                 var eventUser = @event.Users.FirstOrDefault(u => u.UserId == UserConstants.UserId);
                 if (eventUser == null)
                 {
@@ -67,7 +64,7 @@ namespace SportPlanner.ViewModels
                 }
                 else
                 {
-                    eventUser.IsAttending = isAttending;
+                    eventUser.IsAttending = !eventUser.IsAttending;
                 }
 
                 await _dataStore.UpdateAsync(@event);
@@ -90,8 +87,8 @@ namespace SportPlanner.ViewModels
         public Event Event
         {
             get => @event;
-            set 
-            { 
+            set
+            {
                 SetProperty(ref @event, value);
                 EditItemCommand.ChangeCanExecute();
                 DeleteCommand.ChangeCanExecute();
@@ -104,22 +101,16 @@ namespace SportPlanner.ViewModels
             set => SetProperty(ref timeOfDay, value);
         }
 
-        public bool AttendingBtnEnabled
+        public string AttendBtnText
         {
-            get => attendingBtnEnabled;
-            set => SetProperty(ref attendingBtnEnabled, value);
+            get => attendBtnText;
+            set => SetProperty(ref attendBtnText, value);
         }
 
-        public bool UnAttendingBtnEnabled
+        public bool IsAttending
         {
-            get => unAttendingBtnEnabled;
-            set => SetProperty(ref unAttendingBtnEnabled, value);
-        }
-
-        public int AttendingCount
-        {
-            get => attendingCount;
-            set => SetProperty(ref attendingCount, value);
+            get => isAttending;
+            set => SetProperty(ref isAttending, value);
         }
 
         public string ItemId
@@ -183,13 +174,13 @@ namespace SportPlanner.ViewModels
         {
             Event = @event;
             TimeOfDay = @event.Date.TimeOfDay.ToString(@"hh\:mm");
-            AttendingCount = @event.Users.Count(u => u.IsAttending);
             UpdateEventUserCollection(@event);
 
             var user = @event.Users.FirstOrDefault(u => u.UserId == UserConstants.UserId);
-            var isAttending = user?.IsAttending ?? false;
-            AttendingBtnEnabled = !isAttending;
-            UnAttendingBtnEnabled = isAttending;
+            IsAttending = user?.IsAttending ?? false;
+            AttendBtnText = IsAttending
+                ? "UnAttend"
+                : "Attend";
         }
 
         private void UpdateEventUserCollection(Event @event)

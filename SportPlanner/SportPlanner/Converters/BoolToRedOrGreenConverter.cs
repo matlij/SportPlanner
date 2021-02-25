@@ -4,19 +4,18 @@ using Xamarin.Forms;
 
 namespace SportPlanner.Converters
 {
-    public class DateTimeConverter : IValueConverter
+    public class BoolToRedOrGreenConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is DateTime date))
-                return value;
-
-            return date.ToLongDateString();
+            return (bool)value
+                ? Color.Red
+                : Color.Green;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value;
+            throw new NotImplementedException();
         }
     }
 }
