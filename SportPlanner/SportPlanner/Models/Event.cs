@@ -55,6 +55,8 @@ namespace SportPlanner.Models
                     return "icon_traning.png";
                 case EventType.Game:
                     return "icon_game.png";
+                case EventType.Social:
+                    return "icon_party.png";
                 default:
                     return null;
             };
