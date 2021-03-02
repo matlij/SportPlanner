@@ -3,80 +3,90 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SportPlanner.Views.ItemDetailPage"
              xmlns:converters="clr-namespace:SportPlanner.Converters"
-             Title="{Binding Title}">
+             Title="Event details">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:BooleanToSymbolConverter x:Key="BoolToSymbolConverter"/>
             <converters:BoolToRedOrGreenConverter x:Key="BoolToRedOrGreenConverter"/>
             <converters:DateTimeConverter x:Key="DateTimeConverter"/>
+            <Color x:Key="Accent">#385F71</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Priority="1" IconImageSource="icon_edit.png" Command="{Binding EditItemCommand}" />
         <ToolbarItem Priority="2" IconImageSource="icon_trash.png" Command="{Binding DeleteCommand}" />
     </ContentPage.ToolbarItems>
-
-    <AbsoluteLayout Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-        <StackLayout Padding="6" Orientation="Horizontal" AbsoluteLayout.LayoutBounds="0.5, 0.5, -1, -1" AbsoluteLayout.LayoutFlags="PositionProportional">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" WidthRequest="40" HeightRequest="40" />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackLayout BackgroundColor="{StaticResource Accent}" VerticalOptions="FillAndExpand" HorizontalOptions="Fill">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Center">
+                <ContentView Padding="0,25,0,25" VerticalOptions="FillAndExpand">
+                    <Label Text="{Binding Event.EventType}" FontSize="50" TextColor="#F5F0F6"/>
+                </ContentView>
+            </StackLayout>
         </StackLayout>
-        <StackLayout Spacing="20" Padding="15" AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All">
-            <Grid Padding="10" ColumnSpacing="15">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Text="Type:" FontSize="16" FontAttributes="Bold" />
-                <Image Grid.Row="0" Grid.Column="1" Source="{Binding Event.IconImage}" HeightRequest="25" WidthRequest="25" HorizontalOptions="Start"/>
-                <Label Grid.Row="1" Text="Time:" FontSize="16" FontAttributes="Bold" />
-                <Label Grid.Row="1" Grid.Column="1" Text="{Binding TimeOfDay}" FontSize="16"/>
-                <Label Grid.Row="2" Text="Date:" FontSize="16" FontAttributes="Bold" />
-                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Event.Date, Converter={StaticResource DateTimeConverter}}" FontSize="16"/>
-                <Label Grid.Row="3" Text="Location:" FontSize="16" FontAttributes="Bold" />
-                <Label Grid.Row="3" Grid.Column="1" Text="TestVägen 1, Stockholm" FontSize="16"/>
-            </Grid>
-            <StackLayout Spacing="15" Padding="10">
-                <Label Text="Invited" FontSize="16" FontAttributes="Bold"/>
-                <ListView ItemsSource="{Binding Users}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <Grid ColumnSpacing="25">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image Source="{Binding IsAttending, Converter={StaticResource BoolToSymbolConverter}}"
+        <AbsoluteLayout Grid.Row="1" Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <StackLayout Padding="6" Orientation="Horizontal" AbsoluteLayout.LayoutBounds="0.5, 0.5, -1, -1" AbsoluteLayout.LayoutFlags="PositionProportional">
+                <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" WidthRequest="40" HeightRequest="40" />
+            </StackLayout>
+            <StackLayout Spacing="0" Padding="15" AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All">
+                <Grid Padding="10" ColumnSpacing="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Text="Time:" FontSize="16" FontAttributes="Bold" />
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding TimeOfDay}" FontSize="16"/>
+                    <Label Grid.Row="1" Text="Date:" FontSize="16" FontAttributes="Bold" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Event.Date, Converter={StaticResource DateTimeConverter}}" FontSize="16"/>
+                    <Label Grid.Row="2" Text="Location:" FontSize="16" FontAttributes="Bold" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="TestVägen 1, Stockholm" FontSize="16"/>
+                </Grid>
+                <StackLayout Spacing="0" Padding="10">
+                    <ListView ItemsSource="{Binding Users}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Grid ColumnSpacing="25">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Image Source="{Binding IsAttending, Converter={StaticResource BoolToSymbolConverter}}"
                                            Aspect="AspectFit" 
                                            HeightRequest="30"
                                            WidthRequest="30" 
                                            HorizontalOptions="Start"/>
-                                    <Label Grid.Column="1"
+                                        <Label Grid.Column="1"
                                            Text="{Binding UserName}" 
                                            LineBreakMode="NoWrap" 
                                            Style="{DynamicResource ListItemTextStyle}"
                                            VerticalOptions="Center"/>
-                                </Grid>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-                <StackLayout Orientation="Horizontal">
-                    <Button Text="{Binding AttendBtnText}"
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <StackLayout Orientation="Horizontal">
+                        <Button Text="{Binding AttendBtnText}"
                             Command="{Binding AttendCommand}"
                             BackgroundColor="{Binding IsAttending, Converter={StaticResource BoolToRedOrGreenConverter}}"
                             HorizontalOptions="FillAndExpand"/>
+                    </StackLayout>
                 </StackLayout>
             </StackLayout>
-        </StackLayout>
-    </AbsoluteLayout>
+        </AbsoluteLayout>
+    </Grid>
 </ContentPage>
