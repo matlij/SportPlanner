@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(FlippinTen.Core.Repository.GenericRepository))]
+
 namespace FlippinTen.Core.Repository
 {
     public class GenericRepository : IGenericRepository
