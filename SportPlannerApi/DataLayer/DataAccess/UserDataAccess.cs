@@ -9,7 +9,6 @@ namespace SportPlannerIngestion.DataLayer.DataAccess
 {
     public class UserDataAccess : IUserDataAccess
     {
-        private readonly string _connectionString;
         private readonly SportPlannerContext _context;
 
         public UserDataAccess(SportPlannerContext context)
