@@ -48,23 +48,14 @@ stages:
   - deployment: Deploy
     displayName: Deploy
     environment: 'development'
-    pool:
-      vmImage: $(vmImageName)
 
     strategy:
       runOnce:
         deploy:
 
           steps:
-          - task: AzureFunctionApp@1
-            displayName: 'Azure functions app deploy'
-            inputs:
-              azureSubscription: '$(azureSubscription)'
-              appType: functionApp
-              appName: $(functionAppName)
-              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-
           - task: AzureRmWebAppDeployment@4
+            displayName: 'Web app deploy'
             inputs:
               ConnectionType: 'AzureRM'
               azureSubscription: 'Azure-prenumeration-mattiaslij(96ba612d-6300-44c9-98f2-494e13d2d962)'
