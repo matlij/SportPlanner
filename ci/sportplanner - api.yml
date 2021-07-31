@@ -18,13 +18,6 @@ stages:
       configuration: release
 
     steps:
-    # - task: DotNetCoreCLI@2
-    #   displayname: 'Build'
-    #   inputs:
-    #     command: 'build'
-    #     projects: 'SportPlannerApi\SportPlannerApi.csproj'
-    #     arguments: '-c $(configuration)'
-
     - task: DotNetCoreCLI@2
       displayName: 'Publish'
       inputs:
@@ -33,11 +26,8 @@ stages:
         arguments: '--output $(Build.ArtifactStagingDirectory) -c $(configuration)'
         zipAfterPublish: True
       
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: $(Build.ArtifactStagingDirectory)
-        artifact: 'sportPlannerApi'
-
+    - publish: $(Build.ArtifactStagingDirectory)/SportPlannerApi.zip
+      artifact: drop
 
 - stage: Deploy
   displayName: Deploy stage
@@ -61,4 +51,4 @@ stages:
               azureSubscription: 'Azure-prenumeration-mattiaslij(96ba612d-6300-44c9-98f2-494e13d2d962)'
               appType: 'webAppLinux'
               WebAppName: 'sp-wa-api'
-              packageForLinux: '$(Build.ArtifactStagingDirectory)/sportPlannerApi/*.zip'
+              packageForLinux: '$(Pipeline.Workspace)/drop/SportPlannerApi.zip'
