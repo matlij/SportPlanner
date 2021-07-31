@@ -61,4 +61,4 @@ stages:
               azureSubscription: 'Azure-prenumeration-mattiaslij(96ba612d-6300-44c9-98f2-494e13d2d962)'
               appType: 'webAppLinux'
               WebAppName: 'sp-wa-api'
-              packageForLinux: '$(Build.ArtifactStagingDirectory)/sportPlannerApi.zip'
+              packageForLinux: '$(Build.ArtifactStagingDirectory)/sportPlannerApi/*.zip'
