@@ -1,12 +1,12 @@
-﻿using System;
+﻿using ModelsCore;
+using SportPlanner.Models;
+using SportPlanner.Models.Constants;
+using SportPlanner.Models.Translation;
+using SportPlanner.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FlippinTen.Core.Repository;
-using ModelsCore;
-using ModelsCore.Constants;
-using SportPlanner.Models;
-using SportPlanner.Models.Translation;
 
 namespace SportPlanner.Services
 {
@@ -73,7 +73,7 @@ namespace SportPlanner.Services
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
-                Path = $"{UriConstants.EventUri}"
+                Path = UriConstants.EventUri,
             };
 
             return await GetEvents(uri);
@@ -83,7 +83,8 @@ namespace SportPlanner.Services
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
-                Path = $"api/user/{userId}/events"
+                Path = UriConstants.EventUri,
+                Query = $"userId={UserConstants.UserId}"
             };
 
             return await GetEvents(uri);

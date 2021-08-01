@@ -1,6 +1,6 @@
 ﻿using Autofac;
-using FlippinTen.Core.Repository;
 using SportPlanner.Models;
+using SportPlanner.Repository;
 using SportPlanner.Services;
 using System;
 using System.Diagnostics;

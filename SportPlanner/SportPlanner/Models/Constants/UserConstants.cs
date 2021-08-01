@@ -1,4 +1,4 @@
-﻿namespace SportPlanner.Models
+﻿namespace SportPlanner.Models.Constants
 {
     public static class UserConstants
     {

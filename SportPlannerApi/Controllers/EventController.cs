@@ -60,7 +60,7 @@ namespace SportPlannerApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-            return new OkObjectResult(result);
+            return CreatedAtAction(nameof(GetById), result.Identifier, null);
         }
 
         // PUT api/<EventController>/5
@@ -82,7 +82,7 @@ namespace SportPlannerApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-            return CreatedAtAction(nameof(GetById), result.Identifier, null);
+            return Ok(result);
         }
 
         // DELETE api/<EventController>/5

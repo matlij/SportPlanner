@@ -1,17 +1,16 @@
-﻿using FlippinTen.Core.Repository;
-using ModelsCore;
+﻿using ModelsCore;
 using ModelsCore.Constants;
 using SportPlanner.Models;
 using SportPlanner.Models.Translation;
+using SportPlanner.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SportPlanner.Services
 {
-    class UserDataStore : IDataStore<User>
+    internal class UserDataStore : IDataStore<User>
     {
         private readonly IGenericRepository _repository;
 
@@ -52,6 +51,5 @@ namespace SportPlanner.Services
         {
             throw new NotImplementedException();
         }
-
     }
 }

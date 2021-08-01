@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(FlippinTen.Core.Repository.GenericRepository))]
+[assembly: Dependency(typeof(SportPlanner.Repository.GenericRepository))]
 
-namespace FlippinTen.Core.Repository
+namespace SportPlanner.Repository
 {
     public class GenericRepository : IGenericRepository
     {
         public async Task<T> GetAsync<T>(string requestUri)
         {
-            using (var client = new HttpClient())
+            using (var client = GetHttpClient())
             {
                 HttpResponseMessage response = await client.GetAsync(requestUri);
                 if (!response.IsSuccessStatusCode)
@@ -28,7 +28,7 @@ namespace FlippinTen.Core.Repository
 
         public async Task<T> PostAsync<T>(string requestUri, T body)
         {
-            using (var client = new HttpClient())
+            using (var client = GetHttpClient())
             {
                 var content = new StringContent(JsonConvert.SerializeObject(body));
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -47,7 +47,7 @@ namespace FlippinTen.Core.Repository
 
         public async Task<bool> PutAsync<T>(string requestUri, T body)
         {
-            using (var client = new HttpClient())
+            using (var client = GetHttpClient())
             {
                 var content = new StringContent(JsonConvert.SerializeObject(body));
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -60,7 +60,7 @@ namespace FlippinTen.Core.Repository
 
         public async Task<bool> PatchAsync<T>(string requestUri, T body)
         {
-            using (var client = new HttpClient())
+            using (var client = GetHttpClient())
             {
                 var method = new HttpMethod("PATCH");
                 var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
@@ -78,12 +78,38 @@ namespace FlippinTen.Core.Repository
 
         public async Task<bool> DeleteAsync(string requestUri)
         {
-            using (var client = new HttpClient())
+            using (var client = GetHttpClient())
             {
                 HttpResponseMessage response = await client.DeleteAsync(requestUri);
 
                 return response.IsSuccessStatusCode;
             }
+        }
+
+        private static HttpClient GetHttpClient()
+        {
+#if DEBUG
+            HttpClientHandler insecureHandler = GetInsecureHandler();
+            return new HttpClient(insecureHandler);
+#else
+            return new HttpClient();
+#endif
+        }
+
+        private static HttpClientHandler GetInsecureHandler()
+        {
+            return new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+                {
+                    if (cert.Issuer.Equals("CN=localhost"))
+                    {
+                        return true;
+                    }
+
+                    return errors == System.Net.Security.SslPolicyErrors.None;
+                }
+            };
         }
     }
 }

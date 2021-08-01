@@ -1,26 +1,26 @@
-﻿using System;
+﻿using SportPlanner.Models;
+using SportPlanner.Services;
+using SportPlanner.Views;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using SportPlanner.Models;
-using SportPlanner.Views;
-using System.Linq;
-using SportPlanner.Services;
 
 namespace SportPlanner.ViewModels
 {
     public class ItemsViewModel : BaseViewModel
     {
         private Event _selectedItem;
-        private readonly IDataStore<Event> _dataStore;
+        private readonly IEventDataStore _dataStore;
 
         public ObservableCollection<Event> Items { get; }
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
         public Command<Event> ItemTapped { get; }
 
-        public ItemsViewModel(IDataStore<Event> dataStore)
+        public ItemsViewModel(IEventDataStore dataStore)
         {
             Title = "Events";
             Items = new ObservableCollection<Event>();
@@ -32,14 +32,14 @@ namespace SportPlanner.ViewModels
             _dataStore = dataStore;
         }
 
-        async Task ExecuteLoadItemsCommand()
+        private async Task ExecuteLoadItemsCommand()
         {
             IsBusy = true;
 
             try
             {
                 Items.Clear();
-                var items = await _dataStore.GetAsync(forceRefresh: true);
+                var items = await _dataStore.GetFromUserAsync(UserConstants.UserId, forceRefresh: true);
                 foreach (var @event in items.OrderBy(i => i.Date))
                 {
                     @event.CurrentUserIsAttending = UserIsAttendingEvent(@event);
@@ -77,7 +77,7 @@ namespace SportPlanner.ViewModels
             await Shell.Current.GoToAsync(nameof(NewItemPage));
         }
 
-        async void OnItemSelected(Event item)
+        private async void OnItemSelected(Event item)
         {
             if (item == null)
                 return;
