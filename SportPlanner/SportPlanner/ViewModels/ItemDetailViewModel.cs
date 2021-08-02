@@ -1,10 +1,11 @@
-﻿using System;
+﻿using SportPlanner.Models;
+using SportPlanner.Models.Constants;
+using SportPlanner.Services;
+using SportPlanner.Views;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using SportPlanner.Models;
-using SportPlanner.Services;
-using SportPlanner.Views;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels

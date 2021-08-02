@@ -1,12 +1,13 @@
-﻿using System;
+﻿using SportPlanner.Models;
+using SportPlanner.Models.Constants;
+using SportPlanner.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SportPlanner.Models;
-using SportPlanner.Services;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
@@ -192,7 +193,6 @@ namespace SportPlanner.ViewModels
 
                 await Shell.Current.GoToAsync($"..?{nameof(ItemDetailViewModel.ItemId)}={identifier}");
             }
-
         }
 
         private static ObservableCollection<EventUser> CreateEventUsers(IEnumerable<TaskAddEventUser> usersToInvite, IEnumerable<EventUser> currentlyInvitedUsers)

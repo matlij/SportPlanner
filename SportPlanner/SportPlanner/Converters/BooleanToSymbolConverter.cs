@@ -1,4 +1,4 @@
-﻿using SportPlanner.Models;
+﻿using SportPlanner.Models.Constants;
 using System;
 using System.Globalization;
 using Xamarin.Forms;
