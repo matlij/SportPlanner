@@ -89,7 +89,6 @@ namespace SportPlanner.ViewModels
         {
             try
             {
-                var invitedUsers = new List<EventUser>();
                 if (itemId != null && itemId != default(int).ToString())
                 {
                     Debug.WriteLine($"Loading event with ID: " + itemId);
@@ -99,12 +98,12 @@ namespace SportPlanner.ViewModels
                     Title = @event.EventType.ToString();
                     Date = @event.Date;
                     EventType = @event.EventType;
-                    invitedUsers = @event.Users.ToList();
+                    _invitedUsers = @event.Users.ToList();
                 }
 
                 Debug.WriteLine($"Loading users");
                 var users = await _userDataStore.GetAsync(forceRefresh: true);
-                Users = CreateUsersList(users, invitedUsers);
+                Users = CreateUsersList(users, _invitedUsers);
             }
             catch (Exception e)
             {
@@ -182,7 +181,8 @@ namespace SportPlanner.ViewModels
             var currentUser = new EventUser(UserConstants.UserId)
             {
                 IsAttending = IsAttencding(currentlyInvitedUsers, UserConstants.UserId),
-                IsOwner = true
+                IsOwner = true,
+                UserName = UserConstants.UserName
             };
             collection.Add(currentUser);
 
