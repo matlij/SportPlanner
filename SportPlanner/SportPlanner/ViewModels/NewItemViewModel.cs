@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
@@ -34,8 +33,7 @@ namespace SportPlanner.ViewModels
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
-            this.PropertyChanged +=
-                (_, __) => SaveCommand.ChangeCanExecute();
+            PropertyChanged += (_, __) => SaveCommand.ChangeCanExecute();
 
             Date = DateTime.Now;
             _eventDataStore = dataStore;
@@ -90,54 +88,30 @@ namespace SportPlanner.ViewModels
             set => SetProperty(ref _eventTypes, value);
         }
 
-        public async Task LoadUsers()
-        {
-            Debug.WriteLine($"Loading users");
-
-            IsBusy = true;
-
-            try
-            {
-                Users.Clear();
-                var users = await _userDataStore.GetAsync(forceRefresh: true);
-
-                await _semaphoreSlim.WaitAsync();
-                Debug.WriteLine($"Populating users list");
-                Users = CreateUsersList(users, _invitedUsers);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Load users failed: " + e);
-            }
-            finally
-            {
-                IsBusy = false;
-                _semaphoreSlim.Release();
-            }
-        }
-
         public async void LoadItemId(string itemId)
         {
-            Debug.WriteLine($"Loading event with ID: " + itemId);
-
             try
             {
-                await _semaphoreSlim.WaitAsync();
+                var invitedUsers = new List<EventUser>();
+                if (itemId != null && itemId != default(int).ToString())
+                {
+                    Debug.WriteLine($"Loading event with ID: " + itemId);
 
-                var @event = await _eventDataStore.GetAsync(itemId);
-                _invitedUsers = @event.Users.ToList();
-                Id = @event.Id;
-                Title = @event.EventType.ToString();
-                Date = @event.Date;
-                EventType = @event.EventType;
+                    var @event = await _eventDataStore.GetAsync(itemId);
+                    Id = @event.Id;
+                    Title = @event.EventType.ToString();
+                    Date = @event.Date;
+                    EventType = @event.EventType;
+                    invitedUsers = @event.Users.ToList();
+                }
+
+                Debug.WriteLine($"Loading users");
+                var users = await _userDataStore.GetAsync(forceRefresh: true);
+                Users = CreateUsersList(users, invitedUsers);
             }
             catch (Exception e)
             {
                 Debug.WriteLine("Failed to Load Item. " + e.Message);
-            }
-            finally
-            {
-                _semaphoreSlim.Release();
             }
         }
 

@@ -75,7 +75,7 @@ namespace SportPlanner.ViewModels
 
         private async void OnAddItem(object obj)
         {
-            await Shell.Current.GoToAsync(nameof(NewItemPage));
+            await Shell.Current.GoToAsync($"{nameof(NewItemPage)}?{nameof(NewItemViewModel.ItemId)}=0");
         }
 
         private async void OnItemSelected(Event item)
