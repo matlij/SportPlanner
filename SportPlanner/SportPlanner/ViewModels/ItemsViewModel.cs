@@ -49,7 +49,7 @@ namespace SportPlanner.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Debug.WriteLine("Load events faild: " + ex);
             }
             finally
             {

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
@@ -14,8 +13,6 @@ namespace SportPlanner.ViewModels
     [QueryProperty(nameof(ItemId), nameof(ItemId))]
     public class NewItemViewModel : BaseViewModel
     {
-        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
-
         private List<EventUser> _invitedUsers = new List<EventUser>();
         private ObservableCollection<EventType> _eventTypes = new ObservableCollection<EventType>();
         private ObservableCollection<TaskAddEventUser> _users = new ObservableCollection<TaskAddEventUser>();

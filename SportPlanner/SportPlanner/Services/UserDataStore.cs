@@ -1,6 +1,6 @@
 ﻿using ModelsCore;
-using ModelsCore.Constants;
 using SportPlanner.Models;
+using SportPlanner.Models.Constants;
 using SportPlanner.Models.Translation;
 using SportPlanner.Repository;
 using System;

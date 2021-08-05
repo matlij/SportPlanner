@@ -1,9 +1,8 @@
-﻿using Xamarin.Forms;
-
+﻿using SportPlanner.Bootstrap;
 using SportPlanner.Models;
-using SportPlanner.ViewModels;
-using SportPlanner.Bootstrap;
 using SportPlanner.Services;
+using SportPlanner.ViewModels;
+using Xamarin.Forms;
 
 namespace SportPlanner.Views
 {
@@ -17,12 +16,6 @@ namespace SportPlanner.Views
             var eventDataStore = Appcontiner.Resolve<IEventDataStore>();
             var userDataStore = Appcontiner.Resolve<IDataStore<User>>();
             BindingContext = _viewModel = new NewItemViewModel(eventDataStore, userDataStore);
-        }
-
-        protected async override void OnAppearing()
-        {
-            base.OnAppearing();
-            await _viewModel.LoadUsers();
         }
     }
 }
