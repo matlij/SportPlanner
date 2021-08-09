@@ -53,10 +53,13 @@ namespace SportPlanner.Models
             {
                 case EventType.Traning:
                     return "icon_traning.png";
+
                 case EventType.Game:
                     return "icon_game.png";
+
                 case EventType.Social:
                     return "icon_party.png";
+
                 default:
                     return null;
             };
@@ -64,7 +67,7 @@ namespace SportPlanner.Models
 
         public string Id { get; }
         public DateTime Date { get; set; }
-        public string DateString => $"{Date.TimeOfDay:hh\\:mm}, {Date.ToLongDateString()}";
+        public string DateString => $"{Date.TimeOfDay:hh\\:mm} - {Date.ToLongDateString()}";
         public string DaysLeft { get => $"Days left: {(Date - DateTime.Now).Days}"; }
         public EventType EventType { get; }
         public string IconImage { get; private set; }
@@ -73,6 +76,7 @@ namespace SportPlanner.Models
         public bool CurrentUserIsAttending { get; set; }
         public string UsersAttending { get => $"Attending: {Users.Count(u => u.IsAttending)} / {Users.Count}"; }
     }
+
     public class User
     {
         public User(string id)
