@@ -4,7 +4,7 @@ trigger:
     - master
   paths:
     include:
-    - SportPlannerApi\DataLayer\Migrations
+    - SportPlannerApi/DataLayer/Migrations
 
 pool:
   vmImage: ubuntu-latest
@@ -12,12 +12,12 @@ pool:
 stages:
 - stage: CreateDb
   jobs:
-    job: CreateDb
+  - job: CreateDb
     variables:
-    - resource: sp-rg-weu
-    - location: West Europe
-    - login: mattiaslij
-    - password: samplePassword123!
+      resource: sp-rg-weu
+      location: West Europe
+      login: mattiaslij
+      password: samplePassword123!
 
     steps:
     - task: AzureCLI@2
