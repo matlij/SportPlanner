@@ -59,13 +59,15 @@ namespace SportPlanner.ViewModels
                     var newEventUser = new EventUser(UserConstants.UserId)
                     {
                         UserName = UserConstants.UserName,
-                        IsAttending = true
+                        UserReply = EventReply.Attending
                     };
                     @event.Users.Add(newEventUser);
                 }
                 else
                 {
-                    eventUser.IsAttending = !eventUser.IsAttending;
+                    eventUser.UserReply = eventUser.IsAttending
+                        ? EventReply.NotAttending
+                        : EventReply.Attending;
                 }
 
                 await _dataStore.UpdateAsync(@event);

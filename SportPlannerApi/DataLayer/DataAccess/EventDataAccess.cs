@@ -122,7 +122,7 @@ namespace SportPlannerIngestion.DataLayer.DataAccess
                 var newEventUser = new EventUser
                 {
                     UserId = existingUser.Id,
-                    IsAttending = inputEventUser.IsAttending,
+                    UserReply = inputEventUser.UserReply,
                     IsOwner = inputEventUser.IsOwner
                 };
                 if (@event.Id != default)

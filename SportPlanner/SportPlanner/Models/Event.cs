@@ -4,39 +4,6 @@ using System.Linq;
 
 namespace SportPlanner.Models
 {
-    public class TaskAddEventUser
-    {
-        public TaskAddEventUser(string id)
-        {
-            Id = id;
-        }
-
-        public string Id { get; }
-        public string Name { get; set; }
-        public bool Invited { get; set; }
-    }
-
-    public class EventUser : IEquatable<EventUser>
-    {
-        public EventUser(string userId)
-        {
-            UserId = userId;
-        }
-
-        public string UserId { get; }
-        public string UserName { get; set; }
-        public bool IsAttending { get; set; }
-        public bool IsOwner { get; set; }
-
-        public bool Equals(EventUser other)
-        {
-            if (other == null)
-                return false;
-
-            return other.UserId == UserId;
-        }
-    }
-
     public class Event
     {
         public Event(string id, EventType eventType)
@@ -74,26 +41,6 @@ namespace SportPlanner.Models
         public string Address { get; set; }
         public ObservableCollection<EventUser> Users { get; set; }
         public bool CurrentUserIsAttending { get; set; }
-        public string UsersAttending { get => $"Attending: {Users.Count(u => u.IsAttending)} / {Users.Count}"; }
-    }
-
-    public class User
-    {
-        public User(string id)
-        {
-            Id = id;
-        }
-
-        public string Id { get; }
-        public string Name { get; set; }
-    }
-
-    public enum EventType
-    {
-        Undefined,
-        Traning,
-        Game,
-        Social,
-        Other
+        public string UsersAttending { get => $"{Users.Count(u => u.IsAttending)} / {Users.Count} attending"; }
     }
 }

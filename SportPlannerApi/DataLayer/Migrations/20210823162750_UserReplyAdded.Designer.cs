@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportPlannerIngestion.DataLayer.Data;
 
 namespace SportPlannerIngestion.DataLayer.Migrations
 {
     [DbContext(typeof(SportPlannerContext))]
-    partial class SportPlannerContextModelSnapshot : ModelSnapshot
+    [Migration("20210823162750_UserReplyAdded")]
+    partial class UserReplyAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

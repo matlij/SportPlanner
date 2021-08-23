@@ -24,27 +24,36 @@ namespace SportPlanner.Models.Translation
             };
         }
 
-        internal static EventDto AsEventDto(this Event @event) => new EventDto
+        internal static EventDto AsEventDto(this Event @event)
         {
-            Identifier = @event.Id,
-            Address = @event.Address,
-            Date = @event.Date,
-            EventType = (ModelsCore.Enums.EventType)@event.EventType,
-            Users = @event.Users.Select(CreateEventUserDto).ToList(),
-        };
+            return new EventDto
+            {
+                Identifier = @event.Id,
+                Address = @event.Address,
+                Date = @event.Date,
+                EventType = (ModelsCore.Enums.EventType)@event.EventType,
+                Users = @event.Users.Select(CreateEventUserDto).ToList(),
+            };
+        }
 
-        private static EventUser CreateEventUser(EventUserDto eventUser) => new EventUser(eventUser.UserId)
+        private static EventUser CreateEventUser(EventUserDto eventUser)
         {
-            IsAttending = eventUser.IsAttending,
-            UserName = eventUser.UserName,
-            IsOwner = eventUser.IsOwner
-        };
+            return new EventUser(eventUser.UserId)
+            {
+                UserName = eventUser.UserName,
+                IsOwner = eventUser.IsOwner,
+                UserReply = (EventReply)eventUser.UserReply
+            };
+        }
 
-        private static EventUserDto CreateEventUserDto(EventUser eventUser) => new EventUserDto
+        private static EventUserDto CreateEventUserDto(EventUser eventUser)
         {
-            UserId = eventUser.UserId,
-            IsAttending = eventUser.IsAttending,
-            IsOwner = eventUser.IsOwner
-        };
+            return new EventUserDto
+            {
+                UserId = eventUser.UserId,
+                UserReply = (int)eventUser.UserReply,
+                IsOwner = eventUser.IsOwner
+            };
+        }
     }
 }

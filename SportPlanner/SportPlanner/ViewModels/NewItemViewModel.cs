@@ -165,35 +165,28 @@ namespace SportPlanner.ViewModels
             }
         }
 
-        private static ObservableCollection<EventUser> CreateEventUsers(IEnumerable<TaskAddEventUser> usersToInvite, IEnumerable<EventUser> currentlyInvitedUsers)
+        private static ObservableCollection<EventUser> CreateEventUsers(IEnumerable<TaskAddEventUser> usersToInvite, IEnumerable<EventUser> previouslyInvitedUsers)
         {
             var collection = new ObservableCollection<EventUser>();
             foreach (var userToInvite in usersToInvite)
             {
-                var eventUser = new EventUser(userToInvite.Id)
-                {
-                    IsAttending = IsAttencding(currentlyInvitedUsers, userToInvite.Id),
-                    UserName = userToInvite.Name
-                };
+                var eventUser = CreateEventUser(userToInvite.Id, userToInvite.Name, previouslyInvitedUsers);
                 collection.Add(eventUser);
             }
 
-            var currentUser = new EventUser(UserConstants.UserId)
-            {
-                IsAttending = IsAttencding(currentlyInvitedUsers, UserConstants.UserId),
-                IsOwner = true,
-                UserName = UserConstants.UserName
-            };
+            var currentUser = CreateEventUser(UserConstants.UserId, UserConstants.UserName, previouslyInvitedUsers);
             collection.Add(currentUser);
 
             return collection;
         }
 
-        private static bool IsAttencding(IEnumerable<EventUser> currentlyInvitedUsers, string userIdToInvite)
+        private static EventUser CreateEventUser(string userId, string userName, IEnumerable<EventUser> previouslyInvitedUsers)
         {
-            return currentlyInvitedUsers
-                .SingleOrDefault(eu => eu.UserId == userIdToInvite)?
-                .IsAttending ?? false;
+            return new EventUser(userId)
+            {
+                UserReply = previouslyInvitedUsers.FirstOrDefault(u => u.UserId == userId)?.UserReply ?? EventReply.NotReplied,
+                UserName = userName
+            };
         }
 
         private static ObservableCollection<TaskAddEventUser> CreateUsersList(IEnumerable<User> usersInTeam, IEnumerable<EventUser> invitedUsers)

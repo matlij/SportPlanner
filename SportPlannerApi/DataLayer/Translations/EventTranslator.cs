@@ -42,7 +42,7 @@ namespace SportPlannerIngestion.DataLayer.Models.Translations
             return new EventUserDto
             {
                 UserId = input.User.Identifier,
-                IsAttending = input.IsAttending,
+                UserReply = input.UserReply,
                 UserName = input.User.Name,
                 IsOwner = input.IsOwner
             };
@@ -54,7 +54,7 @@ namespace SportPlannerIngestion.DataLayer.Models.Translations
             {
                 User = new User { Identifier = input.UserId },
                 Event = new Event { Identifier = eventIdentifier },
-                IsAttending = input.IsAttending,
+                UserReply = input.UserReply,
                 IsOwner = input.IsOwner
             };
         }
