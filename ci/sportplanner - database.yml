@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - SportPlannerApi\DataLayer\Migrations
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: CreateDb
+  jobs:
+    job: CreateDb
+    variables:
+      resource: sp-rg-weu
+      location: West Europe
+      login: mattiaslij
+      password: samplePassword123!
+
+    steps:
+    - task: AzureCLI@2
+      displayName: Create SQL Server
+      inputs:
+        azureSubscription: 'Azure-prenumeration-mattiaslij(96ba612d-6300-44c9-98f2-494e13d2d962)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: az sql server create --name sp-sql-server --resource-group $resource --location $location --admin-user $login --admin-password $password
