@@ -14,10 +14,10 @@ stages:
   jobs:
     job: CreateDb
     variables:
-      resource: sp-rg-weu
-      location: West Europe
-      login: mattiaslij
-      password: samplePassword123!
+    - resource: sp-rg-weu
+    - location: West Europe
+    - login: mattiaslij
+    - password: samplePassword123!
 
     steps:
     - task: AzureCLI@2
