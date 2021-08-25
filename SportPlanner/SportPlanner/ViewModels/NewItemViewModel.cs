@@ -21,6 +21,7 @@ namespace SportPlanner.ViewModels
         private readonly IDataStore<Event> _eventDataStore;
         private readonly IDataStore<User> _userDataStore;
         private string _itemId;
+        private TimeSpan selectedTime;
 
         public Command SaveCommand { get; }
         public Command CancelCommand { get; }
@@ -77,6 +78,12 @@ namespace SportPlanner.ViewModels
         public DateTime MaxDate
         {
             get => DateTime.Now.AddDays(365);
+        }
+
+        public TimeSpan SelectedTime
+        {
+            get => selectedTime;
+            set => SetProperty(ref selectedTime, value);
         }
 
         public ObservableCollection<EventType> EventTypes
@@ -145,9 +152,10 @@ namespace SportPlanner.ViewModels
             try
             {
                 var usersToInvite = Users.Where(u => u.Invited);
+                var date = new DateTime(Date.Year, Date.Month, Date.Day, SelectedTime.Hours, SelectedTime.Minutes, 0);
                 var newItem = new Event(identifier, EventType)
                 {
-                    Date = Date,
+                    Date = date,
                     Users = CreateEventUsers(usersToInvite, _invitedUsers)
                 };
 
