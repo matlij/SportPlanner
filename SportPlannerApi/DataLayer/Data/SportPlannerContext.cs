@@ -18,11 +18,14 @@ namespace SportPlannerIngestion.DataLayer.Data
             modelBuilder
                 .Entity<EventUser>()
                 .HasKey(e => new { e.EventId, e.UserId });
-
-            modelBuilder
-                .Entity<User>()
-                .HasIndex(u => u.Identifier)
-                .IsUnique();
+            modelBuilder.Entity<EventUser>()
+                .HasOne(eu => eu.Event)
+                .WithMany(e => e.Users)
+                .HasForeignKey(eu => eu.EventId);
+            modelBuilder.Entity<EventUser>()
+                .HasOne(eu => eu.User)
+                .WithMany(u => u.Events)
+                .HasForeignKey(eu => eu.UserId);
         }
     }
 }

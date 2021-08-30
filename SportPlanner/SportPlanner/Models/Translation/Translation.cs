@@ -8,15 +8,15 @@ namespace SportPlanner.Models.Translation
     {
         internal static User AsUser(this UserDto userDto)
         {
-            return new User(userDto.UserId)
+            return new User(userDto.Id)
             {
-                Name = userDto.UserName
+                Name = userDto.Name
             };
         }
 
         internal static Event AsEvent(this EventDto eventDto)
         {
-            return new Event(eventDto.Identifier, (EventType)eventDto.EventType)
+            return new Event(eventDto.Id, (EventType)eventDto.EventType)
             {
                 Address = eventDto.Address,
                 Date = eventDto.Date,
@@ -28,7 +28,7 @@ namespace SportPlanner.Models.Translation
         {
             return new EventDto
             {
-                Identifier = @event.Id,
+                Id = @event.Id,
                 Address = @event.Address,
                 Date = @event.Date,
                 EventType = (ModelsCore.Enums.EventType)@event.EventType,

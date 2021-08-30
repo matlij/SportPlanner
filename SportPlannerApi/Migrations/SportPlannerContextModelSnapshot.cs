@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SportPlannerIngestion.DataLayer.Data;
 
-namespace SportPlannerIngestion.DataLayer.Migrations
+namespace SportPlannerApi.Migrations
 {
     [DbContext(typeof(SportPlannerContext))]
-    [Migration("20210823162750_UserReplyAdded")]
-    partial class UserReplyAdded
+    partial class SportPlannerContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,10 +21,8 @@ namespace SportPlannerIngestion.DataLayer.Migrations
 
             modelBuilder.Entity("SportPlannerIngestion.DataLayer.Models.Event", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
@@ -37,10 +33,6 @@ namespace SportPlannerIngestion.DataLayer.Migrations
                     b.Property<int>("EventType")
                         .HasColumnType("int");
 
-                    b.Property<string>("Identifier")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Events");
@@ -48,11 +40,11 @@ namespace SportPlannerIngestion.DataLayer.Migrations
 
             modelBuilder.Entity("SportPlannerIngestion.DataLayer.Models.EventUser", b =>
                 {
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
+                    b.Property<string>("EventId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsOwner")
                         .HasColumnType("bit");
@@ -69,13 +61,7 @@ namespace SportPlannerIngestion.DataLayer.Migrations
 
             modelBuilder.Entity("SportPlannerIngestion.DataLayer.Models.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Identifier")
-                        .IsRequired()
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
@@ -83,22 +69,19 @@ namespace SportPlannerIngestion.DataLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Identifier")
-                        .IsUnique();
-
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("SportPlannerIngestion.DataLayer.Models.EventUser", b =>
                 {
                     b.HasOne("SportPlannerIngestion.DataLayer.Models.Event", "Event")
-                        .WithMany("EventUsers")
+                        .WithMany("Users")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SportPlannerIngestion.DataLayer.Models.User", "User")
-                        .WithMany("EventUsers")
+                        .WithMany("Events")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -110,12 +93,12 @@ namespace SportPlannerIngestion.DataLayer.Migrations
 
             modelBuilder.Entity("SportPlannerIngestion.DataLayer.Models.Event", b =>
                 {
-                    b.Navigation("EventUsers");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("SportPlannerIngestion.DataLayer.Models.User", b =>
                 {
-                    b.Navigation("EventUsers");
+                    b.Navigation("Events");
                 });
 #pragma warning restore 612, 618
         }

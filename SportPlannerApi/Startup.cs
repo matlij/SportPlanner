@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using ModelsCore.Interfaces;
+using SportPlannerApi.DataLayer.Profiles;
 using SportPlannerIngestion.DataLayer.Data;
 using SportPlannerIngestion.DataLayer.DataAccess;
 
@@ -34,6 +35,8 @@ namespace SportPlannerApi
 
             services.AddTransient<IEventDataAccess, EventDataAccess>();
             services.AddTransient<IUserDataAccess, UserDataAccess>();
+
+            services.AddAutoMapper(typeof(SportPlannerProfile));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,8 @@
-﻿using ModelsCore;
+﻿using AutoMapper;
+using ModelsCore;
 using ModelsCore.Interfaces;
 using SportPlannerIngestion.DataLayer.Data;
-using SportPlannerIngestion.DataLayer.Translations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,17 +11,19 @@ namespace SportPlannerIngestion.DataLayer.DataAccess
     public class UserDataAccess : IUserDataAccess
     {
         private readonly SportPlannerContext _context;
+        private readonly IMapper _mapper;
 
-        public UserDataAccess(SportPlannerContext context)
+        public UserDataAccess(SportPlannerContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public IEnumerable<UserDto> GetAll()
         {
-            return _context.Users
-                .Select(u => u.AsUserDto())
-                .ToList();
+            var users = _context.Users.ToList();
+
+            return _mapper.Map<IEnumerable<UserDto>>(users);
         }
     }
 }

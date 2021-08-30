@@ -1,5 +1,4 @@
-﻿using ModelsCore;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ModelsCore.Interfaces
 {

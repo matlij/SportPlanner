@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using ModelsCore;
-using ModelsCore.Exceptions;
+using ModelsCore.Enums;
 using ModelsCore.Interfaces;
 using SportPlannerIngestion.DataLayer.Data;
 using SportPlannerIngestion.DataLayer.Models;
-using SportPlannerIngestion.DataLayer.Models.Translations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +16,12 @@ namespace SportPlannerIngestion.DataLayer.DataAccess
     public class EventDataAccess : IEventDataAccess
     {
         private readonly SportPlannerContext _context;
+        private readonly IMapper _mapper;
 
-        public EventDataAccess(SportPlannerContext context)
+        public EventDataAccess(SportPlannerContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public ICollection<EventDto> GetAll(string userId = null)
@@ -27,135 +29,81 @@ namespace SportPlannerIngestion.DataLayer.DataAccess
             var events = userId == null
                 ? GetEvents(_context)
                 : GetEvents(_context)
-                    .Where(e => e.EventUsers
-                        .Any(eu => eu.User.Identifier == userId)); ;
+                    .Where(e => e.Users.Any(eu => eu.UserId == userId));
 
-            return events
-                .Select(e => e.AsEventDto())
-                .ToList();
+            return _mapper.Map<ICollection<EventDto>>(events.ToList());
         }
 
         public EventDto GetById(string identifier)
         {
-            return GetEvents(_context)
-                .FirstOrDefault(e => e.Identifier == identifier)
-                .AsEventDto();
+            var @event = GetEvents(_context).FirstOrDefault(e => e.Id == identifier);
+            return _mapper.Map<EventDto>(@event);
         }
 
-        public async Task<EventDto> Store(EventDto input)
+        public async Task<(CrudResult crudResult, EventDto eventDto)> Store(EventDto input)
         {
             return await StoreEvent(_context, input);
         }
 
-        public async Task<EventDto> Update(EventDto input)
+        public async Task<CrudResult> Update(string id, EventDto input)
         {
             var existing = _context.Events
-                .Include(e => e.EventUsers)
-                .SingleOrDefault(e => e.Identifier == input.Identifier);
+                .Include(e => e.Users)
+                .SingleOrDefault(e => e.Id == id);
+
+            if (input.Id is null)
+            {
+                input.Id = id;
+            }
+
             if (existing == null)
             {
-                return await StoreEvent(_context, input);
+                var (crudResult, eventDto) = await StoreEvent(_context, input);
+                return crudResult;
             }
-
-            var newUsers = GetEventUsers(_context, existing, input.Users);
-            if (existing.EventUsers != null)
-                existing.EventUsers.Clear();
-            existing.EventUsers = newUsers;
-
-            existing.Date = input.Date;
-            existing.Address = input.Address;
-            existing.EventType = (int)input.EventType;
-
-            await _context.SaveChangesAsync();
-            return existing.AsEventDto();
+            else
+            {
+                _mapper.Map(input, existing);
+                await _context.SaveChangesAsync();
+                return CrudResult.Ok;
+            }
         }
 
-        public async Task<bool> Delete(string identifier)
+        public async Task<CrudResult> Delete(string identifier)
         {
-            var eventToRemove = _context.Events.Single(e => e.Identifier == identifier);
+            var eventToRemove = _context.Events.Single(e => e.Id == identifier);
             if (eventToRemove == null)
             {
-                return false;
-            }
-
-            var eventUsersToRemove = _context.EventUsers.Where(eu => eu.Event.Identifier == identifier);
-            foreach (var eventUser in eventUsersToRemove)
-            {
-                _context.EventUsers.Remove(eventUser);
+                return CrudResult.NotFound;
             }
 
             _context.Remove(eventToRemove);
+            var result = await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
-            return true;
+            return result > 0 ? CrudResult.Ok : CrudResult.NoAction;
         }
 
-        private static async Task<EventDto> StoreEvent(SportPlannerContext context, EventDto input)
+        private async Task<(CrudResult crudResult, EventDto eventDto)> StoreEvent(SportPlannerContext context, EventDto input)
         {
-            if (string.IsNullOrEmpty(input.Identifier))
+            if (string.IsNullOrEmpty(input.Id))
             {
-                input.Identifier = Guid.NewGuid().ToString();
+                input.Id = Guid.NewGuid().ToString();
             }
 
-            var @event = input.AsEvent();
+            var newEvent = _mapper.Map<Event>(input);
 
-            var eventUsers = GetEventUsers(context, @event, input.Users);
-            @event.EventUsers = eventUsers;
+            context.Add(newEvent);
+            var result = await context.SaveChangesAsync();
+            var crudResult = result > 0 ? CrudResult.Ok : CrudResult.NoAction;
 
-            context.Add(@event);
-            await context.SaveChangesAsync();
-
-            return @event.AsEventDto();
-        }
-
-        private static ICollection<EventUser> GetEventUsers(SportPlannerContext context, Event @event, IEnumerable<EventUserDto> inputUsers)
-        {
-            var eventUsers = new List<EventUser>();
-            if (inputUsers == null)
-            {
-                return eventUsers;
-            }
-
-            foreach (var inputEventUser in inputUsers)
-            {
-                var existingUser = GetUserFromSource(context, inputEventUser.UserId);
-                var newEventUser = new EventUser
-                {
-                    UserId = existingUser.Id,
-                    UserReply = inputEventUser.UserReply,
-                    IsOwner = inputEventUser.IsOwner
-                };
-                if (@event.Id != default)
-                {
-                    newEventUser.EventId = @event.Id;
-                }
-                else
-                {
-                    newEventUser.Event = @event;
-                }
-
-                eventUsers.Add(newEventUser);
-            }
-
-            return eventUsers;
-        }
-
-        private static User GetUserFromSource(SportPlannerContext context, string userId)
-        {
-            var user = context.Users.FirstOrDefault(u => u.Identifier == userId);
-            if (user == null)
-            {
-                throw new BadInputException("Couldn't find user with id: " + userId);
-            }
-
-            return user;
+            return (crudResult, _mapper.Map<EventDto>(newEvent));
         }
 
         private static IIncludableQueryable<Event, User> GetEvents(SportPlannerContext context)
         {
             return context.Events
-                .Include(e => e.EventUsers)
-                .ThenInclude(e => e.User);
+                .Include(e => e.Users)
+                .ThenInclude(eu => eu.User);
         }
     }
 }

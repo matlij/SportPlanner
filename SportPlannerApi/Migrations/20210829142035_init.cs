@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SportPlannerIngestion.DataLayer.Migrations
+namespace SportPlannerApi.Migrations
 {
     public partial class init : Migration
     {
@@ -11,12 +11,10 @@ namespace SportPlannerIngestion.DataLayer.Migrations
                 name: "Events",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Identifier = table.Column<string>(nullable: false),
-                    Date = table.Column<DateTime>(nullable: false),
-                    EventType = table.Column<int>(nullable: false),
-                    Address = table.Column<string>(nullable: true)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EventType = table.Column<int>(type: "int", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -27,10 +25,8 @@ namespace SportPlannerIngestion.DataLayer.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Identifier = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,9 +37,10 @@ namespace SportPlannerIngestion.DataLayer.Migrations
                 name: "EventUsers",
                 columns: table => new
                 {
-                    EventId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
-                    IsAttending = table.Column<bool>(nullable: false)
+                    EventId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsOwner = table.Column<bool>(type: "bit", nullable: false),
+                    UserReply = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,12 +63,6 @@ namespace SportPlannerIngestion.DataLayer.Migrations
                 name: "IX_EventUsers_UserId",
                 table: "EventUsers",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_Identifier",
-                table: "Users",
-                column: "Identifier",
-                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
