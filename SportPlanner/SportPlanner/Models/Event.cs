@@ -6,7 +6,7 @@ namespace SportPlanner.Models
 {
     public class Event
     {
-        public Event(string id, EventType eventType)
+        public Event(Guid id, EventType eventType)
         {
             Id = id;
             EventType = eventType;
@@ -32,15 +32,23 @@ namespace SportPlanner.Models
             };
         }
 
-        public string Id { get; }
+        public Guid Id { get; }
         public DateTime Date { get; set; }
         public string DateString => $"{Date.TimeOfDay:hh\\:mm} - {Date.ToLongDateString()}";
         public string DaysLeft { get => $"Days left: {(Date - DateTime.Now).Days}"; }
         public EventType EventType { get; }
         public string IconImage { get; private set; }
-        public string Address { get; set; }
+        public Address Address { get; set; }
         public ObservableCollection<EventUser> Users { get; set; }
         public bool CurrentUserIsAttending { get; set; }
         public string UsersAttending { get => $"{Users.Count(u => u.IsAttending)} / {Users.Count} attending"; }
+    }
+
+    public class Address
+    {
+        public Guid Id { get; set; }
+        public string FullAddress { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
     }
 }

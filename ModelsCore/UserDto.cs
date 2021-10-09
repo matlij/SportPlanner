@@ -1,8 +1,10 @@
-﻿namespace ModelsCore
+﻿using System;
+
+namespace ModelsCore
 {
     public class UserDto
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
     }
 }

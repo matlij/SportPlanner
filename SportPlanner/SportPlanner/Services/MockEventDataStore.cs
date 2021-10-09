@@ -1,22 +1,22 @@
-﻿using System;
+﻿using SportPlanner.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SportPlanner.Models;
 
 namespace SportPlanner.Services
 {
     public class MockEventDataStore : IDataStore<Event>
     {
-        readonly List<Event> _events;
+        private readonly List<Event> _events;
 
         public MockEventDataStore()
         {
             _events = new List<Event>()
             {
-                new Event(Guid.NewGuid().ToString(), EventType.Traning){ Date = new DateTime(2020, 09, 22, 20, 0, 0) },
-                new Event(Guid.NewGuid().ToString(), EventType.Traning){ Date = new DateTime(2020, 09, 29, 20, 0, 0) },
-                new Event(Guid.NewGuid().ToString(), EventType.Game)
+                new Event(Guid.NewGuid(), EventType.Traning){ Date = new DateTime(2020, 09, 22, 20, 0, 0) },
+                new Event(Guid.NewGuid(), EventType.Traning){ Date = new DateTime(2020, 09, 29, 20, 0, 0) },
+                new Event(Guid.NewGuid(), EventType.Game)
                 {
                     Date = new DateTime(2020, 10, 02, 17, 0, 0),
                     Users = new System.Collections.ObjectModel.ObservableCollection<EventUser>()
@@ -33,7 +33,7 @@ namespace SportPlanner.Services
 
         public async Task<bool> UpdateAsync(Event @event)
         {
-            var oldItem = _events.Where((Event arg) => arg.Id == @event.Id).FirstOrDefault();
+            var oldItem = _events.FirstOrDefault((Event arg) => arg.Id == @event.Id);
             _events.Remove(oldItem);
             _events.Add(@event);
 
@@ -42,7 +42,7 @@ namespace SportPlanner.Services
 
         public async Task<bool> DeleteAsync(string id)
         {
-            var oldItem = _events.Where((Event arg) => arg.Id == id).FirstOrDefault();
+            var oldItem = _events.FirstOrDefault((Event arg) => arg.Id == Guid.Parse(id));
             _events.Remove(oldItem);
 
             return await Task.FromResult(true);
@@ -50,12 +50,12 @@ namespace SportPlanner.Services
 
         public async Task<Event> GetAsync(string id)
         {
-            return await Task.FromResult(_events.FirstOrDefault(s => s.Id == id));
+            return await Task.FromResult(_events.FirstOrDefault(s => s.Id == Guid.Parse(id)));
         }
 
         public async Task<IEnumerable<Event>> GetFromUserAsync(string userId, bool forceRefresh = false)
         {
-            return await Task.FromResult(_events.Where(e => e.Users.Any(u => u.UserId == userId)));
+            return await Task.FromResult(_events.Where(e => e.Users.Any(u => u.UserId == new Guid(userId))));
         }
 
         public async Task<IEnumerable<Event>> GetAsync(bool forceRefresh = false)

@@ -2,9 +2,8 @@
 
 namespace SportPlannerIngestion.DataLayer.Models
 {
-    public class User
+    public class User : BaseEntity
     {
-        public string Id { get; set; }
         public string Name { get; set; }
         public ICollection<EventUser> Events { get; set; }
     }

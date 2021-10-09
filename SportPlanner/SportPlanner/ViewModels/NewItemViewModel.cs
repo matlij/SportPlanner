@@ -101,7 +101,7 @@ namespace SportPlanner.ViewModels
                     Debug.WriteLine($"Loading event with ID: " + itemId);
 
                     var @event = await _eventDataStore.GetAsync(itemId);
-                    Id = @event.Id;
+                    Id = @event.Id.ToString();
                     Title = @event.EventType.ToString();
                     Date = @event.Date;
                     EventType = @event.EventType;
@@ -146,16 +146,16 @@ namespace SportPlanner.ViewModels
             IsBusy = true;
 
             var identifier = string.IsNullOrEmpty(Id)
-                ? Guid.NewGuid().ToString()
-                : Id;
+                ? Guid.NewGuid()
+                : Guid.Parse(Id);
 
             try
             {
                 var usersToInvite = Users.Where(u => u.Invited);
-                var date = new DateTime(Date.Year, Date.Month, Date.Day, SelectedTime.Hours, SelectedTime.Minutes, 0);
+                var eventDate = new DateTime(Date.Year, Date.Month, Date.Day, SelectedTime.Hours, SelectedTime.Minutes, 0);
                 var newItem = new Event(identifier, EventType)
                 {
-                    Date = date,
+                    Date = eventDate,
                     Users = CreateEventUsers(usersToInvite, _invitedUsers)
                 };
 
@@ -188,7 +188,7 @@ namespace SportPlanner.ViewModels
             return collection;
         }
 
-        private static EventUser CreateEventUser(string userId, string userName, IEnumerable<EventUser> previouslyInvitedUsers)
+        private static EventUser CreateEventUser(Guid userId, string userName, IEnumerable<EventUser> previouslyInvitedUsers)
         {
             return new EventUser(userId)
             {
@@ -200,7 +200,7 @@ namespace SportPlanner.ViewModels
         private static ObservableCollection<TaskAddEventUser> CreateUsersList(IEnumerable<User> usersInTeam, IEnumerable<EventUser> invitedUsers)
         {
             var users = new ObservableCollection<TaskAddEventUser>();
-            if (usersInTeam.Count() == 0)
+            if (!usersInTeam.Any())
                 return users;
 
             var usersWithOwnerRemoved = usersInTeam.Where(u => u.Id != UserConstants.UserId);

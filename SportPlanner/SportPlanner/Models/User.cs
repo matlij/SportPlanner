@@ -1,13 +1,15 @@
-﻿namespace SportPlanner.Models
+﻿using System;
+
+namespace SportPlanner.Models
 {
     public class User
     {
-        public User(string id)
+        public User(Guid id)
         {
             Id = id;
         }
 
-        public string Id { get; }
+        public Guid Id { get; }
         public string Name { get; set; }
     }
 }

@@ -50,7 +50,12 @@
                     <Label Grid.Row="1" Text="Date:" FontSize="16" FontAttributes="Bold" />
                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding Event.Date, Converter={StaticResource DateTimeConverter}}" FontSize="16" />
                     <Label Grid.Row="2" Text="Location:" FontSize="16" FontAttributes="Bold" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="TestVägen 1, Stockholm" FontSize="16" />
+
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding Event.Address.FullAddress}" FontSize="16" TextColor="Blue" TextDecorations="Underline">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AddressTappedCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
                 </Grid>
                 <StackLayout Spacing="0" Padding="10">
                     <ListView ItemsSource="{Binding Users}">

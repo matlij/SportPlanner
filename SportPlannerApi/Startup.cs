@@ -5,10 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using ModelsCore.Interfaces;
+using SportPlannerApi.DataLayer.DataAccess;
 using SportPlannerApi.DataLayer.Profiles;
 using SportPlannerIngestion.DataLayer.Data;
-using SportPlannerIngestion.DataLayer.DataAccess;
+using SportPlannerIngestion.DataLayer.Models;
 
 namespace SportPlannerApi
 {
@@ -33,8 +33,9 @@ namespace SportPlannerApi
             services.AddDbContext<SportPlannerContext>(o =>
                 o.UseSqlServer(Configuration.GetConnectionString("dbConnectionString")));
 
-            services.AddTransient<IEventDataAccess, EventDataAccess>();
-            services.AddTransient<IUserDataAccess, UserDataAccess>();
+            services.AddTransient<IRepository<Address>, Repository<Address>>();
+            services.AddTransient<IRepository<Event>, Repository<Event>>();
+            services.AddTransient<IRepository<User>, Repository<User>>();
 
             services.AddAutoMapper(typeof(SportPlannerProfile));
         }

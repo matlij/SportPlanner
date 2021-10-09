@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ModelsCore;
 using ModelsCore.Enums;
-using ModelsCore.Interfaces;
+using SportPlannerApi.DataLayer.DataAccess;
+using SportPlannerApi.DataLayer.Specifications;
+using SportPlannerIngestion.DataLayer.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -17,28 +21,30 @@ namespace SportPlannerApi.Controllers
     public class EventController : ControllerBase
     {
         private readonly ILogger<EventController> _log;
-        private readonly IEventDataAccess _dataAccess;
-        private readonly IUserDataAccess _userDataAccess;
+        private readonly IRepository<Event> _dataAccess;
 
-        public EventController(ILogger<EventController> log, IEventDataAccess eventDataAccess, IUserDataAccess userDataAccess)
+        public EventController(ILogger<EventController> log, IRepository<Event> dataAccess)
         {
             _log = log;
-            _dataAccess = eventDataAccess;
-            _userDataAccess = userDataAccess;
+            _dataAccess = dataAccess;
         }
 
         [HttpGet]
-        public IEnumerable<EventDto> GetAll([FromQuery] string userId)
+        public async Task<IEnumerable<EventDto>> GetAll([FromQuery] Guid userId, [FromQuery] int limit = 100)
         {
-            var events = _dataAccess.GetAll(userId);
+            ISpecification<Event> spec = userId != default && userId != Guid.Empty
+                ? new GetEntitiesByUserIdSpecification(userId)
+                : new GetEntitiesSpec();
 
-            return events;
+            return await _dataAccess.Get<EventDto>(spec, limit);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<EventDto> GetById([Required] string id)
+        public async Task<ActionResult<EventDto>> GetById([Required] Guid id)
         {
-            var @event = _dataAccess.GetById(id);
+            var result = await _dataAccess.Get<EventDto>(new GetEntitiesByIdSpecification(id));
+
+            var @event = result.SingleOrDefault();
             if (@event != null)
             {
                 return Ok(@event);
@@ -50,7 +56,7 @@ namespace SportPlannerApi.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody, Required] EventDto value)
         {
-            var (crudResult, eventDto) = await _dataAccess.Store(value);
+            var (crudResult, eventDto) = await _dataAccess.Add(value);
             if (crudResult != CrudResult.Ok)
             {
                 _log.LogError($"FAILED: Create event: ${JsonSerializer.Serialize(value)}");
@@ -62,33 +68,44 @@ namespace SportPlannerApi.Controllers
 
         // PUT api/<EventController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put([Required] string id, [FromBody] EventDto value)
+        public async Task<ActionResult> Put([Required] Guid id, [FromBody] EventDto value)
         {
-            var result = await _dataAccess.Update(id, value);
-            if (result != CrudResult.Ok)
+            var includes = new string[]
             {
-                _log.LogError($"FAILED: Update event: {JsonSerializer.Serialize(value)}");
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                nameof(Event.Address),
+                $"{nameof(Event.Users)}.{nameof(EventUser.User)}"
+            };
+
+            var result = await _dataAccess.Update(new GetByIdSpecification<Event>(id, includes), value);
+            if (result == CrudResult.NotFound)
+            {
+                return BadRequest("Entity not found");
+            }
+            if (result == CrudResult.Ok)
+            {
+                return NoContent();
             }
 
-            return NoContent();
+            _log.LogError($"FAILED: Update event: {JsonSerializer.Serialize(value)}");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         // DELETE api/<EventController>/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete([Required] string id)
+        public async Task<ActionResult> Delete([Required] Guid id)
         {
-            if (string.IsNullOrEmpty(id))
-                return BadRequest("Event identifier is null or empty");
-
             var result = await _dataAccess.Delete(id);
-            if (result != CrudResult.Ok)
+            if (result == CrudResult.NotFound)
             {
-                _log.LogError($"FAILED: Delete event: {id}");
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return BadRequest("Entity not found");
+            }
+            if (result == CrudResult.Ok)
+            {
+                return NoContent();
             }
 
-            return NoContent();
+            _log.LogError($"FAILED: Delete event with ID: {id}");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 }

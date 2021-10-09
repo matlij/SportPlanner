@@ -32,7 +32,7 @@ namespace SportPlanner.Services
             return await Task.FromResult(true);
         }
 
-        public async Task<bool> UpdateAsync(Event @event)
+        public Task<bool> UpdateAsync(Event @event)
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
@@ -40,9 +40,7 @@ namespace SportPlanner.Services
             };
 
             var eventDto = @event.AsEventDto();
-            await _repository.PutAsync(uri.ToString(), eventDto);
-
-            return await Task.FromResult(true);
+            return _repository.PutAsync(uri.ToString(), eventDto);
         }
 
         public async Task<bool> DeleteAsync(string id)
@@ -79,7 +77,7 @@ namespace SportPlanner.Services
             return await GetEvents(uri);
         }
 
-        public async Task<IEnumerable<Event>> GetFromUserAsync(string userId, bool forceRefresh = false)
+        public async Task<IEnumerable<Event>> GetFromUserAsync(Guid userId, bool forceRefresh = false)
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {

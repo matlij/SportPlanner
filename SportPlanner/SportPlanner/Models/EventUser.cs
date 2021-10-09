@@ -4,12 +4,12 @@ namespace SportPlanner.Models
 {
     public class EventUser : IEquatable<EventUser>
     {
-        public EventUser(string userId)
+        public EventUser(Guid userId)
         {
             UserId = userId;
         }
 
-        public string UserId { get; }
+        public Guid UserId { get; }
         public string UserName { get; set; }
 
         public bool IsAttending => UserReply == EventReply.Attending;

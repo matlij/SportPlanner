@@ -6,6 +6,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
@@ -23,6 +25,7 @@ namespace SportPlanner.ViewModels
 
         public Command EditItemCommand { get; }
         public Command DeleteCommand { get; }
+        public Command AddressTappedCommand { get; }
 
         public ItemDetailViewModel(IDataStore<Event> dataStore)
         {
@@ -30,6 +33,32 @@ namespace SportPlanner.ViewModels
             AttendCommand = new Command(OnAttend);
             EditItemCommand = new Command(OnEditItemTapped, CanEditItem);
             DeleteCommand = new Command(OnDelete, CanEditItem);
+            AddressTappedCommand = new Command(async () => await OnAddressTapped());
+        }
+
+        private async Task OnAddressTapped()
+        {
+            try
+            {
+                var locations = await Geocoding.GetLocationsAsync(Event.Address.FullAddress);
+                var location = locations?.FirstOrDefault();
+
+                if (location is null)
+                {
+                    Debug.WriteLine($"No locations found for address '{Event.Address}'");
+                    return;
+                }
+
+                await Map.OpenAsync(location);
+            }
+            catch (FeatureNotSupportedException fnsEx)
+            {
+                Debug.WriteLine($"Map function not supported on device. Exception: {fnsEx.Message}");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"No map application available to open or Geocoding failed. Exception: {e.Message}");
+            }
         }
 
         private bool CanEditItem(object arg)
@@ -70,8 +99,15 @@ namespace SportPlanner.ViewModels
                         : EventReply.Attending;
                 }
 
-                await _dataStore.UpdateAsync(@event);
-                UpdateProperties(@event);
+                var success = await _dataStore.UpdateAsync(@event);
+                if (success)
+                {
+                    UpdateProperties(@event);
+                }
+                else
+                {
+                    Debug.WriteLine($"Failed to update event with id: {@event.Id}");
+                }
             }
             catch (Exception e)
             {
@@ -136,7 +172,7 @@ namespace SportPlanner.ViewModels
             try
             {
                 var @event = await _dataStore.GetAsync(itemId);
-                Id = @event.Id;
+                Id = @event.Id.ToString();
                 Title = @event.EventType.ToString();
                 UpdateProperties(@event);
             }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ModelsCore;
-using ModelsCore.Interfaces;
+using SportPlannerApi.DataLayer.DataAccess;
+using SportPlannerIngestion.DataLayer.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SportPlannerApi.Controllers
 {
@@ -11,20 +13,18 @@ namespace SportPlannerApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _log;
-        private readonly IUserDataAccess _dataAccess;
+        private readonly IRepository<User> _dataAccess;
 
-        public UserController(ILogger<UserController> log, IUserDataAccess dataAccess)
+        public UserController(ILogger<UserController> log, IRepository<User> dataAccess)
         {
             _log = log;
             _dataAccess = dataAccess;
         }
 
         [HttpGet]
-        public IEnumerable<UserDto> GetAll()
+        public async Task<IEnumerable<UserDto>> GetAll()
         {
-            var events = _dataAccess.GetAll();
-
-            return events;
+            return await _dataAccess.GetAll<UserDto>();
         }
     }
 }

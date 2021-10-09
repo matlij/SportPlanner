@@ -26,6 +26,8 @@ namespace SportPlannerApi.DataLayer.Profiles
             CreateMap<UserDto, User>()
                 .ForMember(dest => dest.Events, opt => opt.Ignore());
 
+            CreateMap<AddressDto, Address>();
+
             #endregion DtoToModel
 
             #region ModelToDto
@@ -35,6 +37,7 @@ namespace SportPlannerApi.DataLayer.Profiles
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.Name : null));
 
             CreateMap<User, UserDto>();
+            CreateMap<Address, AddressDto>();
 
             #endregion ModelToDto
         }

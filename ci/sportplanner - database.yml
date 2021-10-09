@@ -26,4 +26,4 @@ stages:
         azureSubscription: 'Azure-prenumeration-mattiaslij(96ba612d-6300-44c9-98f2-494e13d2d962)'
         scriptType: pscore
         scriptLocation: inlineScript
-        inlineScript: az sql server create --name sp-sql-server --resource-group $resource --location $location --admin-user $login --admin-password $password
+        inlineScript: az sql server create --location swedensouth --resource-group sp-rg-weu --name sp-sql-server --admin-user myadminuser --admin-password myadminpassword

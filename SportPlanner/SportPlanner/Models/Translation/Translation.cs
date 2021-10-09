@@ -14,11 +14,33 @@ namespace SportPlanner.Models.Translation
             };
         }
 
+        internal static Address AsAddress(this AddressDto address)
+        {
+            return new Address
+            {
+                Id = address.Id,
+                FullAddress = address.FullAddress,
+                Latitude = address.Latitude,
+                Longitude = address.Longitude,
+            };
+        }
+
+        internal static AddressDto AsAddressDto(this Address address)
+        {
+            return new AddressDto
+            {
+                Id = address.Id,
+                FullAddress = address.FullAddress,
+                Latitude = address.Latitude,
+                Longitude = address.Longitude,
+            };
+        }
+
         internal static Event AsEvent(this EventDto eventDto)
         {
             return new Event(eventDto.Id, (EventType)eventDto.EventType)
             {
-                Address = eventDto.Address,
+                Address = eventDto.Address.AsAddress(),
                 Date = eventDto.Date,
                 Users = eventDto.Users.AsObservableCollection(CreateEventUser)
             };
@@ -29,7 +51,7 @@ namespace SportPlanner.Models.Translation
             return new EventDto
             {
                 Id = @event.Id,
-                Address = @event.Address,
+                Address = @event.Address.AsAddressDto(),
                 Date = @event.Date,
                 EventType = (ModelsCore.Enums.EventType)@event.EventType,
                 Users = @event.Users.Select(CreateEventUserDto).ToList(),

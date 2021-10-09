@@ -1,0 +1,57 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - SportPlanner
+
+pool:
+  vmImage: macOS-10.15
+
+stages:
+- stage: Build
+
+  jobs:
+  - job: Build
+    variables:
+      buildConfiguration: Release
+      outputDirectory: '$(build.binariesDirectory)/$(buildConfiguration)'
+
+    steps:
+    - task: NugetToolInstaller@1
+
+    - task: NugetCommand@2
+      inputs:
+        restoreSolution: '**/*.sln'
+
+    - task: XamarinAndroid@1
+      inputs:
+        projectFile: '**/*Droid*.csproj'
+        outputDirectory: '$(outputDirectory)'
+        configuration: '$(buildConfiguration)'
+        msbuildVersionOption: '16.0'
+
+# - stage: Deploy
+#   displayName: Deploy stage
+#   dependsOn: Build
+#   condition: succeeded()
+
+#   jobs:
+#   - deployment: Deploy
+#     displayName: Deploy
+#     environment: 'development'
+
+#     strategy:
+#       runOnce:
+#         deploy:
+
+#           steps:
+#           - task: AzureRmWebAppDeployment@4
+#             displayName: 'Web app deploy'
+#             inputs:
+#               ConnectionType: 'AzureRM'
+#               azureSubscription: 'Azure-prenumeration-mattiaslij(96ba612d-6300-44c9-98f2-494e13d2d962)'
+#               appType: 'webAppLinux'
+#               WebAppName: 'sp-wa-api'
+#               packageForLinux: '$(Pipeline.Workspace)/drop/SportPlannerApi.zip'

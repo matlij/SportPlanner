@@ -8,6 +8,7 @@ namespace SportPlannerIngestion.DataLayer.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<EventUser> EventUsers { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         public SportPlannerContext(DbContextOptions<SportPlannerContext> options) : base(options)
         {
