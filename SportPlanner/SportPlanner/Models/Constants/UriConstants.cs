@@ -10,8 +10,8 @@ namespace SportPlanner.Models.Constants
             get
             {
                 return DeviceInfo.Platform == DevicePlatform.Android
-                    ? "https://10.0.2.2:5001"
-                    : "https://localhost:5001";
+                    ? "http://10.0.2.2:7071"
+                    : "http://localhost:7071";
             }
         }
 
