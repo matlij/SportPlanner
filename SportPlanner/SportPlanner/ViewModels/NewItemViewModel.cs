@@ -18,6 +18,7 @@ namespace SportPlanner.ViewModels
         private ObservableCollection<TaskAddEventUser> _users = new ObservableCollection<TaskAddEventUser>();
         private EventType eventType;
         private DateTime date;
+        private Address address;
         private readonly IDataStore<Event> _eventDataStore;
         private readonly IDataStore<User> _userDataStore;
         private string _itemId;
@@ -92,6 +93,12 @@ namespace SportPlanner.ViewModels
             set => SetProperty(ref _eventTypes, value);
         }
 
+        public Address Address
+        {
+            get => address;
+            set => SetProperty(ref address, value);
+        }
+
         public async void LoadItemId(string itemId)
         {
             try
@@ -105,6 +112,7 @@ namespace SportPlanner.ViewModels
                     Title = @event.EventType.ToString();
                     Date = @event.Date;
                     EventType = @event.EventType;
+                    Address = @event.Address;
                     _invitedUsers = @event.Users.ToList();
                 }
 
@@ -156,7 +164,8 @@ namespace SportPlanner.ViewModels
                 var newItem = new Event(identifier, EventType)
                 {
                     Date = eventDate,
-                    Users = CreateEventUsers(usersToInvite, _invitedUsers)
+                    Users = CreateEventUsers(usersToInvite, _invitedUsers),
+                    Address = Address
                 };
 
                 await _eventDataStore.UpdateAsync(newItem);
@@ -183,6 +192,7 @@ namespace SportPlanner.ViewModels
             }
 
             var currentUser = CreateEventUser(UserConstants.UserId, UserConstants.UserName, previouslyInvitedUsers);
+            currentUser.IsOwner = true;
             collection.Add(currentUser);
 
             return collection;
