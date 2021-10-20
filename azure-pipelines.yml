@@ -13,17 +13,11 @@ trigger:
     - ModelsCore
 
 variables:
-  # Azure Resource Manager connection created during pipeline creation
   azureSubscription: '2d117bf5-ec1c-4df8-a668-43a6a57860d3'
-
-  # Function app name
   functionAppName: 'sportplannerapi'
-
-  # Agent VM image name
   vmImageName: 'windows-2019'
-
-  # Working Directory
   workingDirectory: '$(System.DefaultWorkingDirectory)/SportPlannerFunctionApi'
+  buildConfiguration: release
 
 stages:
 - stage: Build
@@ -36,20 +30,18 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
-    - powershell: |
-        if (Test-Path "extensions.csproj") {
-            dotnet build extensions.csproj --output ./$(workingDirectory)/bin
-        }
-      displayName: 'Build extensions'
-
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
+    - task: DotNetCoreCLI@2
       inputs:
-        rootFolderOrFile: $(workingDirectory)
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
+        command: 'build'
+        projects: 'SportPlannerFunctionApi\*.csproj'
+        arguments: '-c $(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: 'SportPlannerFunctionApi\*.csproj'
+        arguments: '--no-build --no-restore -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
 
     - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       artifact: drop
