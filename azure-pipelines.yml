@@ -42,8 +42,9 @@ stages:
         publishWebProjects: false
         projects: 'SportPlannerFunctionApi\*.csproj'
         arguments: '--no-build --no-restore -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+        zipAfterPublish: true
 
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    - publish: $(Build.ArtifactStagingDirectory)
       artifact: drop
 
 - stage: Deploy
