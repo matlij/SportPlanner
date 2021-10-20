@@ -35,6 +35,7 @@ stages:
         command: 'build'
         projects: 'SportPlannerFunctionApi\*.csproj'
         arguments: '-c $(buildConfiguration)'
+      displayName: 'Build $(buildConfiguration)'
 
     - task: DotNetCoreCLI@2
       inputs:
@@ -43,6 +44,7 @@ stages:
         projects: 'SportPlannerFunctionApi\*.csproj'
         arguments: '--no-build --no-restore -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
         zipAfterPublish: true
+      displayName: 'Publish $(buildConfiguration)'
 
     - publish: $(Build.ArtifactStagingDirectory)
       artifact: drop
