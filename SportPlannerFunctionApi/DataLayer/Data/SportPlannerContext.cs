@@ -17,6 +17,11 @@ namespace SportPlannerIngestion.DataLayer.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder
+                .Entity<User>()
+                .HasIndex(u => u.Name)
+                .IsUnique();
+
+            modelBuilder
                 .Entity<EventUser>()
                 .HasKey(e => new { e.EventId, e.UserId });
             modelBuilder.Entity<EventUser>()

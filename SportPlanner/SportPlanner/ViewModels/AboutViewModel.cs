@@ -1,4 +1,4 @@
-﻿using System;
+﻿using SportPlanner.Models.Constants;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -14,5 +14,7 @@ namespace SportPlanner.ViewModels
         }
 
         public ICommand OpenWebCommand { get; }
+
+        public string BaseUrl => UriConstants.BaseUri;
     }
 }

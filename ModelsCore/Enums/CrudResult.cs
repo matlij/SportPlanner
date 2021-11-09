@@ -6,6 +6,7 @@
         Ok = 1,
         NoAction = 2,
         NotFound = 3,
-        Error = 4
+        Error = 4,
+        AlreadyExists = 5
     }
 }

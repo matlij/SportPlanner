@@ -1,4 +1,5 @@
 ﻿using ModelsCore;
+using ModelsCore.Enums;
 using SportPlanner.Models;
 using SportPlanner.Models.Constants;
 using SportPlanner.Models.Translation;
@@ -19,7 +20,7 @@ namespace SportPlanner.Services
             _repository = repository;
         }
 
-        public async Task<bool> AddAsync(Event @event)
+        public async Task<CrudResult> AddAsync(Event @event)
         {
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
@@ -29,7 +30,7 @@ namespace SportPlanner.Services
             var eventDto = @event.AsEventDto();
             await _repository.PostAsync(uri.ToString(), eventDto);
 
-            return await Task.FromResult(true);
+            return await Task.FromResult(CrudResult.Ok);
         }
 
         public Task<bool> UpdateAsync(Event @event)

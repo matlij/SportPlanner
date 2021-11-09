@@ -1,4 +1,5 @@
-﻿using SportPlanner.Models;
+﻿using ModelsCore.Enums;
+using SportPlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +15,9 @@ namespace SportPlanner.Services
         {
             _events = new List<Event>()
             {
-                new Event(Guid.NewGuid(), EventType.Traning){ Date = new DateTime(2020, 09, 22, 20, 0, 0) },
-                new Event(Guid.NewGuid(), EventType.Traning){ Date = new DateTime(2020, 09, 29, 20, 0, 0) },
-                new Event(Guid.NewGuid(), EventType.Game)
+                new Event(Guid.NewGuid(), Models.EventType.Traning){ Date = new DateTime(2020, 09, 22, 20, 0, 0) },
+                new Event(Guid.NewGuid(), Models.EventType.Traning){ Date = new DateTime(2020, 09, 29, 20, 0, 0) },
+                new Event(Guid.NewGuid(), Models.EventType.Game)
                 {
                     Date = new DateTime(2020, 10, 02, 17, 0, 0),
                     Users = new System.Collections.ObjectModel.ObservableCollection<EventUser>()
@@ -24,11 +25,11 @@ namespace SportPlanner.Services
             };
         }
 
-        public async Task<bool> AddAsync(Event @event)
+        public async Task<CrudResult> AddAsync(Event @event)
         {
             _events.Add(@event);
 
-            return await Task.FromResult(true);
+            return await Task.FromResult(CrudResult.Ok);
         }
 
         public async Task<bool> UpdateAsync(Event @event)

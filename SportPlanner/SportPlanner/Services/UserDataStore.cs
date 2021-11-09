@@ -1,4 +1,5 @@
 ﻿using ModelsCore;
+using ModelsCore.Enums;
 using SportPlanner.Models;
 using SportPlanner.Models.Constants;
 using SportPlanner.Models.Translation;
@@ -19,14 +20,25 @@ namespace SportPlanner.Services
             _repository = repository;
         }
 
-        public Task<bool> AddAsync(User item)
+        public async Task<CrudResult> AddAsync(User item)
         {
-            throw new NotImplementedException();
+            var uri = new UriBuilder(UriConstants.BaseUri)
+            {
+                Path = $"{UriConstants.UserUri}"
+            };
+
+            var response = await _repository.PostAsync(uri.ToString(), item);
+            return response.result;
         }
 
-        public Task<bool> UpdateAsync(User item)
+        public async Task<bool> UpdateAsync(User item)
         {
-            throw new NotImplementedException();
+            var uri = new UriBuilder(UriConstants.BaseUri)
+            {
+                Path = $"{UriConstants.UserUri}/{item.Id}"
+            };
+
+            return await _repository.PutAsync(uri.ToString(), item);
         }
 
         public Task<bool> DeleteAsync(string id)
@@ -47,9 +59,20 @@ namespace SportPlanner.Services
                 .ToList();
         }
 
-        public Task<User> GetAsync(string id)
+        public async Task<User> GetAsync(string id)
         {
-            throw new NotImplementedException();
+            var uri = new UriBuilder(UriConstants.BaseUri)
+            {
+                Path = $"{UriConstants.UserUri}/{id}"
+            };
+
+            var result = await _repository.GetAsync<UserDto>(uri.ToString());
+            if (result is null)
+            {
+                return null;
+            }
+
+            return result.AsUser();
         }
     }
 }

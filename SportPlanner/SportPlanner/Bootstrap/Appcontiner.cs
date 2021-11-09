@@ -1,13 +1,14 @@
 ﻿using Autofac;
 using SportPlanner.Models;
 using SportPlanner.Repository;
+using SportPlanner.Repository.Interfaces;
 using SportPlanner.Services;
 using System;
 using System.Diagnostics;
 
 namespace SportPlanner.Bootstrap
 {
-    public class Appcontiner
+    public static class Appcontiner
     {
         private static IContainer _container;
 
@@ -15,12 +16,16 @@ namespace SportPlanner.Bootstrap
         {
             var builder = new ContainerBuilder();
 
+            //Services
+            builder.RegisterType<UserLoginService>().As<IUserLoginService>();
+
             //DataStore
             builder.RegisterType<EventDataStore>().As<IEventDataStore>();
             builder.RegisterType<UserDataStore>().As<IDataStore<User>>();
 
             //Repositories
             builder.RegisterType<GenericRepository>().As<IGenericRepository>();
+            builder.RegisterType<LocalRepository<User>>().As<ILocalRepository<User>>();
 
             _container = builder.Build();
         }

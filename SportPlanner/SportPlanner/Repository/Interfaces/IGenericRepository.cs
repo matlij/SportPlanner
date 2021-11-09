@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using ModelsCore.Enums;
+using System.Threading.Tasks;
 
 namespace SportPlanner.Repository
 {
@@ -10,7 +11,7 @@ namespace SportPlanner.Repository
 
         Task<bool> PatchAsync<T>(string requestUri, T body);
 
-        Task<T> PostAsync<T>(string requestUri, T body);
+        Task<(CrudResult result, T entity)> PostAsync<T>(string requestUri, T body);
 
         Task<bool> PutAsync<T>(string requestUri, T body);
     }

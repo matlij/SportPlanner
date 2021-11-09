@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SportPlanner.Bootstrap;
+using SportPlanner.Services;
 using SportPlanner.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -15,7 +12,7 @@ namespace SportPlanner.Views
         public LoginPage()
         {
             InitializeComponent();
-            this.BindingContext = new LoginViewModel();
+            BindingContext = new LoginViewModel(Appcontiner.Resolve<IUserLoginService>());
         }
     }
 }

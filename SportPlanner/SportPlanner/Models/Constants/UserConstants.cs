@@ -14,4 +14,9 @@ namespace SportPlanner.Models.Constants
         public const string NotOkSymbol = "icon_notoksymbol.png";
         public const string NoReplySymbol = "icon_noreply.png";
     }
+
+    public static class FileNameConstants
+    {
+        public const string UserInfoJson = "userInfo.json";
+    }
 }

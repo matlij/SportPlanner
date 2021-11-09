@@ -1,0 +1,549 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver",
+            "location": "westeurope",
+            "kind": "v12.0",
+            "properties": {
+                "administratorLogin": "matlij",
+                "version": "12.0",
+                "minimalTlsVersion": "1.2",
+                "publicNetworkAccess": "Enabled",
+                "restrictOutboundNetworkAccess": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/CreateIndex",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/DbParameterization",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/DefragmentIndex",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/DropIndex",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/ForceLastGoodPlan",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/Default",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/auditingSettings",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
+            },
+            "kind": "v12.0,user",
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 524288000,
+                "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                "zoneRedundant": false,
+                "readScale": "Disabled",
+                "requestedBackupStorageRedundancy": "Local",
+                "maintenanceConfigurationId": "/subscriptions/96ba612d-6300-44c9-98f2-494e13d2d962/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default",
+                "isLedgerOn": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/master/Default",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/master/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/master/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/master/Default",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/master/Current",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/master/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/master/Current",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/master/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/devOpsAuditingSettings",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/encryptionProtector",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/current",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyName": "ServiceManaged",
+                "serverKeyType": "ServiceManaged",
+                "autoRotationEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/extendedAuditingSettings",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [],
+                "isStorageSecondaryKeyInUse": false,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/AllowAllWindowsAzureIps",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/ClientIp-2021-10-21_20-38-1",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "startIpAddress": "31.211.250.220",
+                "endIpAddress": "31.211.250.220"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/keys",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/ServiceManaged",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "kind": "servicemanaged",
+            "properties": {
+                "serverKeyType": "ServiceManaged"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/securityAlertPolicies",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                },
+                "storageContainerPath": null
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/sportplannersqldb/CreateIndex",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/sportplannersqldb/DbParameterization",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/sportplannersqldb/DefragmentIndex",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/sportplannersqldb/DropIndex",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/advisors",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/sportplannersqldb/ForceLastGoodPlan",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "autoExecuteValue": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/sportplannersqldb/Default",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "auditingState": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/auditingSettings",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupLongTermRetentionPolicies",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb/default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "weeklyRetention": "PT0S",
+                "monthlyRetention": "PT0S",
+                "yearlyRetention": "PT0S",
+                "weekOfYear": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb/default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "retentionDays": 7,
+                "diffBackupIntervalInHours": 12
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/extendedAuditingSettings",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "retentionDays": 0,
+                "isAzureMonitorTargetEnabled": false,
+                "state": "Disabled",
+                "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+            "apiVersion": "2014-04-01",
+            "name": "sportplannersqlserver/sportplannersqldb/Default",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "state": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/ledgerDigestUploads",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb/Current",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "disabledAlerts": [
+                    ""
+                ],
+                "emailAddresses": [
+                    ""
+                ],
+                "emailAccountAdmins": false,
+                "retentionDays": 0
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb/Current",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "state": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases/vulnerabilityAssessments",
+            "apiVersion": "2021-02-01-preview",
+            "name": "sportplannersqlserver/sportplannersqldb/Default",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', 'sportplannersqlserver', 'sportplannersqldb')]",
+                "[resourceId('Microsoft.Sql/servers', 'sportplannersqlserver')]"
+            ],
+            "properties": {
+                "recurringScans": {
+                    "isEnabled": false,
+                    "emailSubscriptionAdmins": true
+                }
+            }
+        }
+    ]
+}

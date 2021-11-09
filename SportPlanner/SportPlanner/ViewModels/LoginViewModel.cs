@@ -1,24 +1,58 @@
-﻿using SportPlanner.Views;
+﻿using SportPlanner.Models;
+using SportPlanner.Services;
+using SportPlanner.Views;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 using Xamarin.Forms;
 
 namespace SportPlanner.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
+        private readonly IUserLoginService _userLoginService;
+        private string userName;
+
+        public string UserName
+        {
+            get => userName;
+            set => SetProperty(ref userName, value);
+        }
+
         public Command LoginCommand { get; }
 
-        public LoginViewModel()
+        public LoginViewModel(IUserLoginService userLoginService)
         {
-            LoginCommand = new Command(OnLoginClicked);
+            _userLoginService = userLoginService ?? throw new ArgumentNullException(nameof(userLoginService));
+            LoginCommand = new Command(OnLoginClicked, CanRegisterUser);
+            PropertyChanged += (_, __) => LoginCommand.ChangeCanExecute();
+        }
+
+        private bool CanRegisterUser(object arg)
+        {
+            return !string.IsNullOrEmpty(UserName);
         }
 
         private async void OnLoginClicked(object obj)
         {
-            // Prefixing with `//` switches to a different navigation stack instead of pushing to the active one
-            await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+            IsBusy = true;
+
+            try
+            {
+                var user = new User(Guid.NewGuid())
+                {
+                    Name = UserName
+                };
+
+                await _userLoginService.UpsertUser(user);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Register user '{UserName}' failed. {e.Message}", e.StackTrace);
+            }
+
+            IsBusy = false;
+
+            await Shell.Current.GoToAsync($"///{nameof(LoadingPage)}");
         }
     }
 }

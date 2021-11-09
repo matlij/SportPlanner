@@ -1,9 +1,9 @@
 $rg= 'sp-rg-weu'
-$server= 'sp-sql-serv'
+$server= 'sportplannersqlserver'
 $location= 'westeurope'
-$database= 'sp-sql-db-weu'
+$database= 'sportplannersqldb'
 $user= 'matlij'
-$password= 'myadminpassword321!'
+$password= 'Njadoks189!'
 
 # Write-Output "Connecting user"
 # Connect-AzAccount
@@ -19,4 +19,4 @@ $password= 'myadminpassword321!'
 
 Write-Output "Migrating the database"
 $connectionString= "Server=tcp:$server.database.windows.net,1433;Initial Catalog=$database;Persist Security Info=False;User ID=$user;Password=$password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
-dotnet ef database update --connection $connectionString -p C:\GIT\Mattias\sportplanner\SportPlannerApi\SportPlannerApi.csproj
+dotnet ef database update --connection $connectionString -p ..\SportPlannerApi\SportPlannerApi.csproj

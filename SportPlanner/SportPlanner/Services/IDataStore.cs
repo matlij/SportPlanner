@@ -1,4 +1,5 @@
-﻿using SportPlanner.Models;
+﻿using ModelsCore.Enums;
+using SportPlanner.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ namespace SportPlanner.Services
 {
     public interface IDataStore<T>
     {
-        Task<bool> AddAsync(T item);
+        Task<CrudResult> AddAsync(T item);
 
         Task<bool> UpdateAsync(T item);
 

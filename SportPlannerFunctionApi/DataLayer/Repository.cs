@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using ModelsCore.Enums;
 using SportPlannerFunctionApi.DataLayer.Specifications;
@@ -50,10 +51,14 @@ namespace SportPlannerFunctionApi.DataLayer.DataAccess
             var entity = _mapper.Map<T>(entityDto);
             await _entities.AddAsync(entity);
 
-            var rowsAdded = _context.SaveChanges();
-            if (rowsAdded == 0)
+            try
             {
-                return (CrudResult.NoAction, default);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException e)
+            when (e.InnerException is SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627))
+            {
+                return (CrudResult.AlreadyExists, _mapper.Map<Tdto>(entity));
             }
 
             return (CrudResult.Ok, _mapper.Map<Tdto>(entity));

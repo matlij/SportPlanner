@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using ModelsCore.Enums;
+using Newtonsoft.Json;
+using SportPlanner.Models.Constants;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -26,7 +29,7 @@ namespace SportPlanner.Repository
             }
         }
 
-        public async Task<T> PostAsync<T>(string requestUri, T body)
+        public async Task<(CrudResult, T)> PostAsync<T>(string requestUri, T body)
         {
             using (var client = GetHttpClient())
             {
@@ -35,13 +38,19 @@ namespace SportPlanner.Repository
 
                 HttpResponseMessage response = await client.PostAsync(requestUri, content);
 
-                if (!response.IsSuccessStatusCode)
-                    return default;
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    T result = JsonConvert.DeserializeObject<T>(responseContent);
 
-                var responseContent = await response.Content.ReadAsStringAsync();
-                T result = JsonConvert.DeserializeObject<T>(responseContent);
+                    return (CrudResult.Ok, result);
+                }
+                else if (response.StatusCode == HttpStatusCode.Conflict)
+                {
+                    return (CrudResult.AlreadyExists, default);
+                }
 
-                return result;
+                return (CrudResult.Error, default);
             }
         }
 
@@ -64,7 +73,6 @@ namespace SportPlanner.Repository
             {
                 var method = new HttpMethod("PATCH");
                 var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-                //content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 var request = new HttpRequestMessage(method, requestUri)
                 {
                     Content = content
@@ -90,10 +98,20 @@ namespace SportPlanner.Repository
         {
 #if DEBUG
             HttpClientHandler insecureHandler = GetInsecureHandler();
-            return new HttpClient(insecureHandler);
+            return CreateHttpClient(insecureHandler);
 #else
-            return new HttpClient();
+            return CreateHttpClient();
 #endif
+        }
+
+        private static HttpClient CreateHttpClient(HttpClientHandler httpClientHandler = null)
+        {
+            var client = httpClientHandler is null
+                ? new HttpClient()
+                : new HttpClient(httpClientHandler);
+            client.DefaultRequestHeaders.Add("x-functions-key", UriConstants.Apikey);
+
+            return client;
         }
 
         private static HttpClientHandler GetInsecureHandler()

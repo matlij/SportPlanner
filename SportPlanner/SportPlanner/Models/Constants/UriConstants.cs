@@ -4,7 +4,6 @@ namespace SportPlanner.Models.Constants
 {
     internal static class UriConstants
     {
-        //public const string BaseUri = "https://sp-wa-api.azurewebsites.net";
         public static string BaseUri
         {
             get
@@ -15,8 +14,12 @@ namespace SportPlanner.Models.Constants
             }
         }
 
+        //public const string BaseUri = "https://sportplannerapi.azurewebsites.net";
+
         public const string EventUri = "api/event";
 
         public const string UserUri = "api/user";
+
+        public const string Apikey = "7aMUW2vb21DI3sHCTpCBlKhpF6QrZGmAJRw6ynlaBMiJBEVxoH0Aig==";
     }
 }
