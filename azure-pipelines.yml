@@ -1,0 +1,75 @@
+# PowerShell Function App to Windows on Azure
+# Build a PowerShell Function App and deploy it to Azure as a Windows function app.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-powershell
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - SportPlannerFunctionApi
+    - ModelsCore
+
+variables:
+  azureSubscription: '2d117bf5-ec1c-4df8-a668-43a6a57860d3'
+  functionAppName: 'sportplannerapi'
+  vmImageName: 'windows-2019'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/SportPlannerFunctionApi'
+  buildConfiguration: release
+
+stages:
+- stage: Build
+  displayName: Build stage
+
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        projects: 'SportPlannerFunctionApi\*.csproj'
+        arguments: '-c $(buildConfiguration)'
+      displayName: 'Build $(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: 'SportPlannerFunctionApi\*.csproj'
+        arguments: '--no-build --no-restore -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+        zipAfterPublish: true
+      displayName: 'Publish $(buildConfiguration)'
+
+    - publish: $(Build.ArtifactStagingDirectory)
+      artifact: drop
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: $(functionAppName)
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+
+          steps:
+          - task: AzureFunctionApp@1
+            displayName: 'Azure functions app deploy'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: functionApp
+              appName: $(functionAppName)
+              package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/SportPlannerFunctionApi.zip'
