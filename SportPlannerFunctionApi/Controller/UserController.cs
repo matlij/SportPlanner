@@ -89,4 +89,28 @@ public class UserController
 
         return new NoContentResult();
     }
+
+    [FunctionName("DeleteUser")]
+    public async Task<IActionResult> DeleteUser(
+    [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "user/{id}")] HttpRequest req,
+    ILogger log,
+    Guid id)
+    {
+        log.LogInformation($"C# HTTP trigger function processed a request for {nameof(DeleteUser)}");
+
+        string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+        var crudResult = await _dataAccess.Delete(id);
+        if (crudResult == CrudResult.NotFound)
+        {
+            return new NotFoundResult();
+        }
+        else if (crudResult != CrudResult.Ok)
+        {
+            log.LogError($"FAILED: Delete user: ${id}");
+            return new InternalServerErrorResult();
+        }
+
+        return new NoContentResult();
+    }
 }
