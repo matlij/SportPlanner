@@ -1,4 +1,5 @@
-﻿using SportPlanner.Models;
+﻿using ModelsCore.Enums;
+using SportPlanner.Models;
 using SportPlanner.Services;
 using SportPlanner.Views;
 using System;
@@ -38,16 +39,28 @@ namespace SportPlanner.ViewModels
 
             try
             {
-                var user = new User(Guid.NewGuid())
+                var user = new User()
                 {
+                    Id = Guid.NewGuid(),
                     Name = UserName
                 };
 
-                await _userLoginService.UpsertUser(user);
+                var result = await _userLoginService.AddUser(user);
+
+                if (result == CrudResult.AlreadyExists)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Create account failed", $"User '{UserName}' already exists.", "Ok");
+                }
+                else if (result == CrudResult.Error)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Create account failed", $"Server returned an error. Try again in a while.", "Ok");
+                }
             }
             catch (Exception e)
             {
-                Debug.WriteLine($"Register user '{UserName}' failed. {e.Message}", e.StackTrace);
+                var errorMsg = $"Create account failed. Internal application error: {e.Message}";
+                Debug.WriteLine(errorMsg, e.StackTrace);
+                await Application.Current.MainPage.DisplayAlert("Create account failed", errorMsg, "Ok");
             }
 
             IsBusy = false;

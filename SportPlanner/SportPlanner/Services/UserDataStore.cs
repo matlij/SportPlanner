@@ -43,7 +43,12 @@ namespace SportPlanner.Services
 
         public Task<bool> DeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            var uri = new UriBuilder(UriConstants.BaseUri)
+            {
+                Path = $"{UriConstants.UserUri}/{id}"
+            };
+
+            return _repository.DeleteAsync(uri.ToString());
         }
 
         public async Task<IEnumerable<User>> GetAsync(bool forceRefresh = false)

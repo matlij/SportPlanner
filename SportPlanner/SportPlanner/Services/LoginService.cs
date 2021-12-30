@@ -1,8 +1,10 @@
-﻿using SportPlanner.Models;
-using SportPlanner.Models.Constants;
-using SportPlanner.Repository.Interfaces;
+﻿using ModelsCore.Enums;
+using ModelsCore.Extensions;
+using SportPlanner.Models;
+using SportPlanner.Repository;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SportPlanner.Services
@@ -10,17 +12,15 @@ namespace SportPlanner.Services
     public class UserLoginService : IUserLoginService
     {
         private readonly IDataStore<User> _userDataStore;
-        private readonly ILocalRepository<User> _localUserInfoRepository;
 
-        public UserLoginService(IDataStore<User> userDataStore, ILocalRepository<User> localUserInfoRepository)
+        public UserLoginService(IDataStore<User> userDataStore)
         {
-            _userDataStore = userDataStore ?? throw new System.ArgumentNullException(nameof(userDataStore));
-            _localUserInfoRepository = localUserInfoRepository ?? throw new System.ArgumentNullException(nameof(localUserInfoRepository));
+            _userDataStore = userDataStore ?? throw new ArgumentNullException(nameof(userDataStore));
         }
 
         public async Task<(bool succeeded, User user)> LoginUser()
         {
-            var user = _localUserInfoRepository.GetEntity(FileNameConstants.UserInfoJson);
+            var user = await GetUserFromLocalDb();
             if (user is null)
             {
                 return (false, null);
@@ -39,6 +39,25 @@ namespace SportPlanner.Services
             return (true, user);
         }
 
+        public async Task<User> GetUserFromLocalDb()
+        {
+            var db = await UserDatabase.Instance;
+
+            return (await db.GetAll())?.SingleOrDefault();
+        }
+
+        public async Task<CrudResult> AddUser(User user)
+        {
+            var result = await _userDataStore.AddAsync(user);
+            if (result != CrudResult.Ok)
+            {
+                return result;
+            }
+
+            var db = await UserDatabase.Instance;
+            return await db.Upsert(user);
+        }
+
         public async Task<bool> UpsertUser(User user)
         {
             try
@@ -51,8 +70,9 @@ namespace SportPlanner.Services
                 }
                 else
                 {
-                    _localUserInfoRepository.UpsertEntity(FileNameConstants.UserInfoJson, user);
-                    return true;
+                    var db = await UserDatabase.Instance;
+                    var result = await db.Upsert(user);
+                    return result.IsPositiveResult();
                 }
             }
             catch (Exception e)
@@ -65,7 +85,9 @@ namespace SportPlanner.Services
         public async Task DeleteUser(Guid id)
         {
             await _userDataStore.DeleteAsync(id.ToString());
-            _localUserInfoRepository.DeleteEntity(FileNameConstants.UserInfoJson);
+
+            var db = await UserDatabase.Instance;
+            await db.Delete(id);
         }
     }
 }

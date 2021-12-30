@@ -25,7 +25,7 @@ namespace SportPlanner.Bootstrap
 
             //Repositories
             builder.RegisterType<GenericRepository>().As<IGenericRepository>();
-            builder.RegisterType<LocalRepository<User>>().As<ILocalRepository<User>>();
+            builder.RegisterType<UserDatabase>().As<ILocalStorage<User>>();
 
             _container = builder.Build();
         }

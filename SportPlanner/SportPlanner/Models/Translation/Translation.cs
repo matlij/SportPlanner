@@ -8,8 +8,9 @@ namespace SportPlanner.Models.Translation
     {
         internal static User AsUser(this UserDto userDto)
         {
-            return new User(userDto.Id)
+            return new User()
             {
+                Id = userDto.Id,
                 Name = userDto.Name
             };
         }

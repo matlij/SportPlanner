@@ -1,15 +1,12 @@
-﻿using System;
+﻿using SQLite;
+using System;
 
 namespace SportPlanner.Models
 {
     public class User
     {
-        public User(Guid id)
-        {
-            Id = id;
-        }
-
-        public Guid Id { get; }
+        [PrimaryKey]
+        public Guid Id { get; set; }
         public string Name { get; set; }
     }
 }
