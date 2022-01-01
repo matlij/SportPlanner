@@ -45,7 +45,7 @@
                         Command="{Binding OpenWebCommand}"
                         BackgroundColor="{StaticResource Primary}"
                         TextColor="White" 
-                        VerticalOptions="EndAndExpand"/>
+                        VerticalOptions="CenterAndExpand"/>
         </StackLayout>
     </Grid>
 </ContentPage>
