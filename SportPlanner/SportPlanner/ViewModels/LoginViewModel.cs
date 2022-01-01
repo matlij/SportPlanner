@@ -47,11 +47,7 @@ namespace SportPlanner.ViewModels
 
                 var result = await _userLoginService.AddUser(user);
 
-                if (result == CrudResult.AlreadyExists)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Create account failed", $"User '{UserName}' already exists.", "Ok");
-                }
-                else if (result == CrudResult.Error)
+                if (result == CrudResult.Error)
                 {
                     await Application.Current.MainPage.DisplayAlert("Create account failed", $"Server returned an error. Try again in a while.", "Ok");
                 }

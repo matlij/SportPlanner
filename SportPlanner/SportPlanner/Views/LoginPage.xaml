@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
         <StackLayout BackgroundColor="{StaticResource Accent}" VerticalOptions="FillAndExpand" HorizontalOptions="Fill">
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Center">
-                <ContentView Padding="0,40,0,40" VerticalOptions="FillAndExpand">
+                <ContentView Padding="0,60,0,40" VerticalOptions="FillAndExpand">
                     <Label Text="Ny användare" FontSize="50"/>
                 </ContentView>
             </StackLayout>
@@ -32,6 +32,7 @@
                         Command="{Binding LoginCommand}"
                         BackgroundColor="{StaticResource Primary}"
                         TextColor="White" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
         </StackLayout>
     </Grid>
 </ContentPage>

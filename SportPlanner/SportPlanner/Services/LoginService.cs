@@ -49,7 +49,7 @@ namespace SportPlanner.Services
         public async Task<CrudResult> AddUser(User user)
         {
             var result = await _userDataStore.AddAsync(user);
-            if (result != CrudResult.Ok)
+            if (!result.IsPositiveResult())
             {
                 return result;
             }
