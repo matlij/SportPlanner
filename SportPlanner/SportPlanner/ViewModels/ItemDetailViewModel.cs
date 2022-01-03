@@ -22,14 +22,17 @@ namespace SportPlanner.ViewModels
         private bool isAttending;
 
         private readonly IDataStore<Event> _dataStore;
+        private readonly IUserLoginService _userLoginService;
+        public User User { get; private set; }
 
         public Command EditItemCommand { get; }
         public Command DeleteCommand { get; }
         public Command AddressTappedCommand { get; }
 
-        public ItemDetailViewModel(IDataStore<Event> dataStore)
+        public ItemDetailViewModel(IDataStore<Event> dataStore, IUserLoginService userLoginService)
         {
             _dataStore = dataStore;
+            _userLoginService = userLoginService;
             AttendCommand = new Command(OnAttend);
             EditItemCommand = new Command(OnEditItemTapped, CanEditItem);
             DeleteCommand = new Command(OnDelete, CanEditItem);
@@ -68,7 +71,7 @@ namespace SportPlanner.ViewModels
 
             return @event.Users
                 .Where(u => u.IsOwner)
-                .Any(u => u.UserId == UserConstants.UserId);
+                .Any(u => u.UserId == User.Id);
         }
 
         private async void OnEditItemTapped(object obj)
@@ -82,12 +85,12 @@ namespace SportPlanner.ViewModels
             {
                 IsBusy = true;
 
-                var eventUser = @event.Users.FirstOrDefault(u => u.UserId == UserConstants.UserId);
+                var eventUser = @event.Users.FirstOrDefault(u => u.UserId == User.Id);
                 if (eventUser == null)
                 {
-                    var newEventUser = new EventUser(UserConstants.UserId)
+                    var newEventUser = new EventUser(User.Id)
                     {
-                        UserName = UserConstants.UserName,
+                        UserName = User.Name,
                         UserReply = EventReply.Attending
                     };
                     @event.Users.Add(newEventUser);
@@ -171,6 +174,7 @@ namespace SportPlanner.ViewModels
         {
             try
             {
+                User = await _userLoginService.GetUserFromLocalDb();
                 var @event = await _dataStore.GetAsync(itemId);
                 Id = @event.Id.ToString();
                 Title = @event.EventType.ToString();
@@ -215,7 +219,7 @@ namespace SportPlanner.ViewModels
             TimeOfDay = @event.Date.TimeOfDay.ToString(@"hh\:mm");
             UpdateEventUserCollection(@event);
 
-            var user = @event.Users.FirstOrDefault(u => u.UserId == UserConstants.UserId);
+            var user = @event.Users.FirstOrDefault(u => u.UserId == User.Id);
             IsAttending = user?.IsAttending ?? false;
             AttendBtnText = IsAttending
                 ? "UnAttend"

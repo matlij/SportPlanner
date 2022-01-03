@@ -16,16 +16,16 @@ namespace SportPlanner.ViewModels
     {
         private Event _selectedItem;
         private readonly IEventDataStore _dataStore;
-        private readonly ILocalStorage<User> _localUserStorage;
+        private readonly IUserLoginService _userLoginService;
 
         public ObservableCollection<Event> Items { get; }
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
         public Command<Event> ItemTapped { get; }
 
-        public ItemsViewModel(IEventDataStore dataStore, ILocalStorage<User> localUserStorage)
+        public ItemsViewModel(IEventDataStore dataStore, IUserLoginService userLoginService)
         {
-            Title = "Events";
+            Title = "Aktiviteter";
             Items = new ObservableCollection<Event>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 
@@ -33,7 +33,7 @@ namespace SportPlanner.ViewModels
 
             AddItemCommand = new Command(OnAddItem);
             _dataStore = dataStore;
-            this._localUserStorage = localUserStorage;
+            _userLoginService = userLoginService;
         }
 
         private async Task ExecuteLoadItemsCommand()
@@ -42,7 +42,7 @@ namespace SportPlanner.ViewModels
 
             try
             {
-                var user = (await _localUserStorage.GetAll()).SingleOrDefault();
+                var user = await _userLoginService.GetUserFromLocalDb();
                 if (user is null)
                 {
                     Debug.WriteLine("No user found in local DB");
@@ -52,7 +52,7 @@ namespace SportPlanner.ViewModels
                 var items = await _dataStore.GetFromUserAsync(user.Id, forceRefresh: true);
                 foreach (var @event in items.OrderBy(i => i.Date))
                 {
-                    @event.CurrentUserIsAttending = UserIsAttendingEvent(@event);
+                    @event.CurrentUserIsAttending = UserIsAttendingEvent(@event, user.Id);
                     Items.Add(@event);
                 }
             }
@@ -96,10 +96,10 @@ namespace SportPlanner.ViewModels
             await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
         }
 
-        private bool UserIsAttendingEvent(Event @event)
+        private bool UserIsAttendingEvent(Event @event, Guid userId)
         {
             var user = @event.Users
-                .FirstOrDefault(u => u.UserId == UserConstants.UserId);
+                .FirstOrDefault(u => u.UserId == userId);
 
             return user != null && user.IsAttending;
         }

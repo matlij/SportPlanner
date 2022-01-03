@@ -47,6 +47,11 @@
                         BackgroundColor="{StaticResource Primary}"
                         TextColor="White" 
                         VerticalOptions="CenterAndExpand"/>
+            <Button Margin="0,10,0,0" Text="Ta bort användare"
+                        Command="{Binding DeleteUserCommand}"
+                        BackgroundColor="Red"
+                        TextColor="White" 
+                        VerticalOptions="CenterAndExpand"/>
         </StackLayout>
     </Grid>
 </ContentPage>

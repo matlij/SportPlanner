@@ -1,10 +1,7 @@
 ﻿using Xamarin.Forms;
-
-using SportPlanner.Models;
 using SportPlanner.ViewModels;
 using SportPlanner.Bootstrap;
 using SportPlanner.Services;
-using SportPlanner.Repository.Interfaces;
 
 namespace SportPlanner.Views
 {
@@ -17,8 +14,8 @@ namespace SportPlanner.Views
             InitializeComponent();
 
             var dataStore = Appcontiner.Resolve<IEventDataStore>();
-            var localStorage = Appcontiner.Resolve< ILocalStorage<User>>();
-            BindingContext = _viewModel = new ItemsViewModel(dataStore, localStorage);
+            var loginService = Appcontiner.Resolve<IUserLoginService>();
+            BindingContext = _viewModel = new ItemsViewModel(dataStore, loginService);
         }
 
         protected override void OnAppearing()

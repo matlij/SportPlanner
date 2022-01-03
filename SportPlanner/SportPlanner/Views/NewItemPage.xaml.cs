@@ -15,7 +15,8 @@ namespace SportPlanner.Views
             InitializeComponent();
             var eventDataStore = Appcontiner.Resolve<IEventDataStore>();
             var userDataStore = Appcontiner.Resolve<IDataStore<User>>();
-            BindingContext = _viewModel = new NewItemViewModel(eventDataStore, userDataStore);
+            var userService = Appcontiner.Resolve<IUserLoginService>();
+            BindingContext = _viewModel = new NewItemViewModel(eventDataStore, userDataStore, userService);
         }
     }
 }

@@ -2,12 +2,6 @@
 
 namespace SportPlanner.Models.Constants
 {
-    public static class UserConstants
-    {
-        public const string UserName = "Matte";
-        public static Guid UserId => new Guid("0cafdfe9-614f-495b-b672-61508baa3dbc");
-    }
-
     public static class IconConstants
     {
         public const string OkSymbol = "icon_oksymbol.png";

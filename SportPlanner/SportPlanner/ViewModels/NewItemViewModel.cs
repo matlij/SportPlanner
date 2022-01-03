@@ -21,6 +21,7 @@ namespace SportPlanner.ViewModels
         private Address address;
         private readonly IDataStore<Event> _eventDataStore;
         private readonly IDataStore<User> _userDataStore;
+        private readonly IUserLoginService _userLoginService;
         private string _itemId;
         private TimeSpan selectedTime;
 
@@ -28,7 +29,7 @@ namespace SportPlanner.ViewModels
         public Command CancelCommand { get; }
         public string Id { get; set; }
 
-        public NewItemViewModel(IDataStore<Event> dataStore, IDataStore<User> userDataStore)
+        public NewItemViewModel(IDataStore<Event> dataStore, IDataStore<User> userDataStore, IUserLoginService userLoginService)
         {
             SaveCommand = new Command(OnSave, ValidateSave);
             CancelCommand = new Command(OnCancel);
@@ -37,6 +38,7 @@ namespace SportPlanner.ViewModels
             Date = DateTime.Now;
             _eventDataStore = dataStore;
             _userDataStore = userDataStore;
+            _userLoginService = userLoginService;
             PopulateEventTypes();
         }
 
@@ -118,7 +120,8 @@ namespace SportPlanner.ViewModels
 
                 Debug.WriteLine($"Loading users");
                 var users = await _userDataStore.GetAsync(forceRefresh: true);
-                Users = CreateUsersList(users, _invitedUsers);
+                var user = await _userLoginService.GetUserFromLocalDb();
+                Users = CreateUsersList(users, _invitedUsers, user.Id);
             }
             catch (Exception e)
             {
@@ -158,12 +161,14 @@ namespace SportPlanner.ViewModels
 
             try
             {
+                var user = await _userLoginService.GetUserFromLocalDb();
+
                 var usersToInvite = Users.Where(u => u.Invited);
                 var eventDate = new DateTime(Date.Year, Date.Month, Date.Day, SelectedTime.Hours, SelectedTime.Minutes, 0);
                 var newItem = new Event(identifier, EventType)
                 {
                     Date = eventDate,
-                    Users = CreateEventUsers(usersToInvite, _invitedUsers),
+                    Users = CreateEventUsers(usersToInvite, _invitedUsers, user),
                     Address = Address
                 };
 
@@ -181,7 +186,7 @@ namespace SportPlanner.ViewModels
             }
         }
 
-        private static ObservableCollection<EventUser> CreateEventUsers(IEnumerable<TaskAddEventUser> usersToInvite, IEnumerable<EventUser> previouslyInvitedUsers)
+        private static ObservableCollection<EventUser> CreateEventUsers(IEnumerable<TaskAddEventUser> usersToInvite, IEnumerable<EventUser> previouslyInvitedUsers, User user)
         {
             var collection = new ObservableCollection<EventUser>();
             foreach (var userToInvite in usersToInvite)
@@ -190,7 +195,7 @@ namespace SportPlanner.ViewModels
                 collection.Add(eventUser);
             }
 
-            var currentUser = CreateEventUser(UserConstants.UserId, UserConstants.UserName, previouslyInvitedUsers);
+            var currentUser = CreateEventUser(user.Id, user.Name, previouslyInvitedUsers);
             currentUser.IsOwner = true;
             collection.Add(currentUser);
 
@@ -206,13 +211,13 @@ namespace SportPlanner.ViewModels
             };
         }
 
-        private static ObservableCollection<TaskAddEventUser> CreateUsersList(IEnumerable<User> usersInTeam, IEnumerable<EventUser> invitedUsers)
+        private static ObservableCollection<TaskAddEventUser> CreateUsersList(IEnumerable<User> usersInTeam, IEnumerable<EventUser> invitedUsers, Guid userId)
         {
             var users = new ObservableCollection<TaskAddEventUser>();
             if (!usersInTeam.Any())
                 return users;
 
-            var usersWithOwnerRemoved = usersInTeam.Where(u => u.Id != UserConstants.UserId);
+            var usersWithOwnerRemoved = usersInTeam.Where(u => u.Id != userId);
             foreach (var user in usersWithOwnerRemoved)
             {
                 var isInvited = invitedUsers.Any(eu => eu.UserId == user.Id);

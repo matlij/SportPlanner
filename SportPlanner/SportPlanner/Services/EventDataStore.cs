@@ -83,7 +83,7 @@ namespace SportPlanner.Services
             var uri = new UriBuilder(UriConstants.BaseUri)
             {
                 Path = UriConstants.EventUri,
-                Query = $"userId={UserConstants.UserId}"
+                Query = $"userId={userId}"
             };
 
             return await GetEvents(uri);

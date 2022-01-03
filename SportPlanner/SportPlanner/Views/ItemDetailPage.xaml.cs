@@ -2,7 +2,6 @@
 using SportPlanner.ViewModels;
 using SportPlanner.Bootstrap;
 using SportPlanner.Services;
-using SportPlanner.Models;
 
 namespace SportPlanner.Views
 {
@@ -14,7 +13,8 @@ namespace SportPlanner.Views
         {
             InitializeComponent();
             var dataStore = Appcontiner.Resolve<IEventDataStore>();
-            BindingContext = _viewModel = new ItemDetailViewModel(dataStore);
+            var userService = Appcontiner.Resolve<IUserLoginService>();
+            BindingContext = _viewModel = new ItemDetailViewModel(dataStore, userService);
         }
 
         protected override void OnAppearing()
