@@ -19,10 +19,10 @@ namespace SportPlanner.Models.Translation
         {
             return new Address
             {
-                Id = address.Id,
-                FullAddress = address.FullAddress,
-                Latitude = address.Latitude,
-                Longitude = address.Longitude,
+                Id = address?.Id ?? System.Guid.Empty,
+                FullAddress = address?.FullAddress,
+                Latitude = address?.Latitude ?? default,
+                Longitude = address?.Longitude ?? default,
             };
         }
 
@@ -30,10 +30,10 @@ namespace SportPlanner.Models.Translation
         {
             return new AddressDto
             {
-                Id = address.Id,
-                FullAddress = address.FullAddress,
-                Latitude = address.Latitude,
-                Longitude = address.Longitude,
+                Id = address?.Id ?? System.Guid.Empty,
+                FullAddress = address?.FullAddress,
+                Latitude = address?.Latitude ?? default,
+                Longitude = address?.Longitude ?? default,
             };
         }
 

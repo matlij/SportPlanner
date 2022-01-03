@@ -31,7 +31,7 @@ namespace SportPlanner.Services
             {
                 await _userDataStore.AddAsync(user);
             }
-            else if (user.Name != userInServer.Name)
+            else if (user.Name != userInServer.Name || user.Id != userInServer.Id)
             {
                 return (false, null);
             }
@@ -46,16 +46,28 @@ namespace SportPlanner.Services
             return (await db.GetAll())?.SingleOrDefault();
         }
 
-        public async Task<CrudResult> AddUser(User user)
+        public async Task<CrudResult> AddUser(User newUser)
         {
-            var result = await _userDataStore.AddAsync(user);
+            var result = await _userDataStore.AddAsync(newUser);
             if (!result.IsPositiveResult())
             {
                 return result;
             }
+            else if (result == CrudResult.AlreadyExists)
+            {
+                var existingUser = (await _userDataStore.GetAsync(forceRefresh: true)).Single(u => string.Equals(u.Name, newUser.Name, StringComparison.OrdinalIgnoreCase));
+                return await UpdateInLocalDb(existingUser);
+            }
+            else
+            {
+                return await UpdateInLocalDb(newUser);
+            }
+        }
 
+        private static async Task<CrudResult> UpdateInLocalDb(User entity)
+        {
             var db = await UserDatabase.Instance;
-            return await db.Upsert(user);
+            return await db.Upsert(entity);
         }
 
         public async Task<bool> UpsertUser(User user)

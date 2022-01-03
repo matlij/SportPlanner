@@ -5,6 +5,7 @@ using SportPlanner.Repository.Interfaces;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -59,7 +60,7 @@ namespace SportPlanner.Repository
 
         public async Task<CrudResult> Upsert(User user)
         {
-            var storedUser = await Get(user.Id);
+            var storedUser = (await GetAll()).SingleOrDefault(u => u.Name == user.Name);
             var rowsChanged = storedUser is null
                 ? await _database.InsertAsync(user)
                 : await _database.UpdateAsync(user);

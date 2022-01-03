@@ -1,5 +1,6 @@
 ﻿using SportPlanner.Models;
 using SportPlanner.Models.Constants;
+using SportPlanner.Repository.Interfaces;
 using SportPlanner.Services;
 using SportPlanner.Views;
 using System;
@@ -15,13 +16,14 @@ namespace SportPlanner.ViewModels
     {
         private Event _selectedItem;
         private readonly IEventDataStore _dataStore;
+        private readonly ILocalStorage<User> _localUserStorage;
 
         public ObservableCollection<Event> Items { get; }
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
         public Command<Event> ItemTapped { get; }
 
-        public ItemsViewModel(IEventDataStore dataStore)
+        public ItemsViewModel(IEventDataStore dataStore, ILocalStorage<User> localUserStorage)
         {
             Title = "Events";
             Items = new ObservableCollection<Event>();
@@ -31,6 +33,7 @@ namespace SportPlanner.ViewModels
 
             AddItemCommand = new Command(OnAddItem);
             _dataStore = dataStore;
+            this._localUserStorage = localUserStorage;
         }
 
         private async Task ExecuteLoadItemsCommand()
@@ -39,8 +42,14 @@ namespace SportPlanner.ViewModels
 
             try
             {
+                var user = (await _localUserStorage.GetAll()).SingleOrDefault();
+                if (user is null)
+                {
+                    Debug.WriteLine("No user found in local DB");
+                }
+
                 Items.Clear();
-                var items = await _dataStore.GetFromUserAsync(UserConstants.UserId, forceRefresh: true);
+                var items = await _dataStore.GetFromUserAsync(user.Id, forceRefresh: true);
                 foreach (var @event in items.OrderBy(i => i.Date))
                 {
                     @event.CurrentUserIsAttending = UserIsAttendingEvent(@event);
