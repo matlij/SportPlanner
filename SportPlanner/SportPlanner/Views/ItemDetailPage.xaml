@@ -45,11 +45,11 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Text="Time:" FontSize="16" FontAttributes="Bold" />
+                    <Label Grid.Row="0" Text="Tid:" FontSize="16" FontAttributes="Bold" />
                     <Label Grid.Row="0" Grid.Column="1" Text="{Binding TimeOfDay}" FontSize="16" />
-                    <Label Grid.Row="1" Text="Date:" FontSize="16" FontAttributes="Bold" />
+                    <Label Grid.Row="1" Text="Datum:" FontSize="16" FontAttributes="Bold" />
                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding Event.Date, Converter={StaticResource DateTimeConverter}}" FontSize="16" />
-                    <Label Grid.Row="2" Text="Location:" FontSize="16" FontAttributes="Bold" />
+                    <Label Grid.Row="2" Text="Plats:" FontSize="16" FontAttributes="Bold" />
 
                     <Label Grid.Row="2" Grid.Column="1" Text="{Binding Event.Address.FullAddress}" FontSize="16" TextColor="Blue" TextDecorations="Underline">
                         <Label.GestureRecognizers>

@@ -39,7 +39,7 @@ namespace SportPlanner.Models.Translation
 
         internal static Event AsEvent(this EventDto eventDto)
         {
-            return new Event(eventDto.Id, (EventType)eventDto.EventType)
+            return new Event(eventDto.Id, EventType.FromInt((int)eventDto.EventType))
             {
                 Address = eventDto.Address.AsAddress(),
                 Date = eventDto.Date,
@@ -54,7 +54,7 @@ namespace SportPlanner.Models.Translation
                 Id = @event.Id,
                 Address = @event.Address.AsAddressDto(),
                 Date = @event.Date,
-                EventType = (ModelsCore.Enums.EventType)@event.EventType,
+                EventType = (ModelsCore.Enums.EventType)@event.EventType.Val,
                 Users = @event.Users.Select(CreateEventUserDto).ToList(),
             };
         }

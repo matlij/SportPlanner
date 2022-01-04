@@ -131,8 +131,7 @@ namespace SportPlanner.ViewModels
 
         private void PopulateEventTypes()
         {
-            var eventTypes = Enum.GetValues(typeof(EventType)).Cast<EventType>().Skip(1);
-            foreach (var @event in eventTypes)
+            foreach (var @event in SportPlanner.Models.EventType.List())
             {
                 EventTypes.Add(@event);
             }

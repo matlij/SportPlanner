@@ -41,7 +41,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Image  Grid.RowSpan="3"
-                                Source="{Binding IconImage}"
+                                Source="{Binding EventType.IconImage}"
                                 Aspect="AspectFit" 
                                 HeightRequest="40"
                                 WidthRequest="40" />
